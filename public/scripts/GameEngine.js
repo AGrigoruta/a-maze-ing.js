@@ -134,9 +134,8 @@ class GameEngine {
             for (let j = 0; j < 4; j++) {
                 
         }
-
-
     }
+}
 }
 
 const gGameEngine = new GameEngine();
