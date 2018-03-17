@@ -52,7 +52,7 @@ class GameEngine {
 
     load() {
         // Init canvas
-        this.stage = new createjs.Stage("game");
+        this.stage = new createjs.Stage("Irinagame");
 
         // Load assets
         const queue = new createjs.LoadQueue();
