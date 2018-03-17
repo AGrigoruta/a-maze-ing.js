@@ -59,10 +59,12 @@ class GameEngine {
         const that = this;
         queue.addEventListener('complete', () => {
             that.tilesImgs.wall = queue.getResult('tile_wall');
+            that.tilesImgs.grass = queue.getResult('tile_grass');
             that.setup();
         });
         queue.loadManifest([
-            { id: 'tile_wall', src: 'img/tile_wall.png' }
+            { id: 'tile_wall', src: 'img/tile_wall.png' },
+            { id: 'tile_grass', src: 'img/tile_grass.png' }
         ]);
     }
 
