@@ -10,3 +10,5 @@ With mighty functional tools, built-in Classes and other sugary sweets Javascrip
 * Browser
 * Code Editor (VScode, Sublime, other...)
 * Node.js & npm
+
+#modific si eu paici
