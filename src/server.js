@@ -9,6 +9,7 @@ app.use(express.static('public'));
 
 server.listen(port, null, null, () => {
     console.log(chalk.green(`Server running on http://localhost:${port}`));
+   	console.log("Ionut was here");
 });
 
 app.get('/', function (req, res) {
