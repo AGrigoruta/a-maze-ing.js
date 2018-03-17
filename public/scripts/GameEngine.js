@@ -11,7 +11,7 @@ class GameEngine {
         this.fps = 60;
         this.tileSize = 32;
         this.tilesX = 41;
-        this.tilesY = 21;
+        this.tilesY = 21; //random modification
         this.size = {
             w: this.tileSize * (this.tilesX + 4),
             h: this.tileSize * this.tilesY
