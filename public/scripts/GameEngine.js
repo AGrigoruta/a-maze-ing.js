@@ -90,9 +90,22 @@ class GameEngine {
     }
 
     drawTiles() {
-        const tile = new Tile('grass', { x: 0, y: 0 });
-        this.stage.addChild(tile.bmp);
-        this.tiles.push(tile);
+        // const tile = new Tile('grass', { x: 0, y: 0 });
+        // this.stage.addChild(tile.bmp);
+        // this.tiles.push(tile);
+        for (let i = 0; i < this.tilesY; i++) {
+            for (let j = 0; j < this.tilesX; j++) {
+                if (this.maze[i][j] === 1) {
+                    const tile = new Tile('wall', { x: j, y: i });
+                    this.stage.addChild(tile.bmp);
+                    this.tiles.push(tile);
+                } else {
+                    const tile = new Tile('grass', { x: j, y: i });
+                    this.stage.addChild(tile.bmp);
+                    this.grassTiles.push(tile);
+                }
+            }
+        }
     }
 }
 
