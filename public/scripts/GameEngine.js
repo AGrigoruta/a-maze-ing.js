@@ -1,41 +1,80 @@
+import gInputEngine from './InputEngine.js';
+import Tile from './Tile.js';
+import Princess from './Princess.js';
+
 class GameEngine {
     constructor() {
-        this.fps = 60;
-        this.textRectangle = null;
-        this.title1 = null;
-        this.title2 = null;
+        // Canvas
         this.stage = null;
+
+        // Environment Parameters
+        this.fps = 60;
+        this.tileSize = 32;
+        this.tilesX = 41;
+        this.tilesY = 21;
+        this.size = {
+            w: this.tileSize * (this.tilesX + 4),
+            h: this.tileSize * this.tilesY
+        };
+
+        // Asset Objects
+        this.tilesImgs = {};        
+
+        // Environment Arrays
+        this.tiles = [];
+        this.grassTiles = [];
+        this.towerEdgeTiles = [];
+        this.maze = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ];
+        
     }
 
     load() {
         // Init canvas
         this.stage = new createjs.Stage("game");
 
-        var bounds = new createjs.Shape();
-        bounds.graphics.beginFill("#3f3f3f").drawRect(0,0,this.stage.canvas.width, this.stage.canvas.height);
-        this.stage.addChild(bounds);
-
-        this.textRectangle = new createjs.Shape();
-        this.textRectangle.graphics.beginFill("rgba(66, 185, 244, 0.7)").drawRect(0, 0, 600, 100);
-        this.textRectangle.x = 100;
-        this.textRectangle.y = (this.stage.canvas.height - 100) / 2;
-        this.stage.addChild(this.textRectangle);
-
-        this.title1 = new createjs.Text("This is", "50px Helvetica", "#ff4444");
-        this.title2 = new createjs.Text("the game!", "50px Helvetica", "#ffffff");
-
-        this.title1.x = this.textRectangle.x + 100;
-        this.title1.y = this.textRectangle.y + 25;
-        this.stage.addChild(this.title1);
-
-        this.title2.x = this.title1.x + this.title1.getMeasuredWidth() + 10;
-        this.title2.y = this.title1.y;
-        this.stage.addChild(this.title2);
-
-        this.setup();
+        // Load assets
+        const queue = new createjs.LoadQueue();
+        const that = this;
+        queue.addEventListener('complete', () => {
+            that.tilesImgs.wall = queue.getResult('tile_wall');
+            that.setup();
+        });
+        queue.loadManifest([
+            { id: 'tile_wall', src: 'img/tile_wall.png' }
+        ]);
     }
 
     setup() {
+        // Reset environment states
+        this.tiles = [];
+        this.grassTiles = [];
+        this.towerEdgeTiles = [];
+
+        // Draw tiles
+        this.drawTiles();
+
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
@@ -44,16 +83,14 @@ class GameEngine {
     }
 
     update() {
-        createjs.Tween.get(gGameEngine.textRectangle, { loop: true })
-            .to({ x: 700 }, 2000, createjs.Ease.getPowInOut(4))
-            .to({ x: 100 }, 2000, createjs.Ease.getPowInOut(4));
-        createjs.Tween.get(gGameEngine.title1, { loop: true })
-            .to({ x: gGameEngine.title1.x + 600 }, 2000, createjs.Ease.getPowInOut(4))
-            .to({ x: gGameEngine.title1.x }, 2000, createjs.Ease.getPowInOut(4));
-        createjs.Tween.get(gGameEngine.title2, { loop: true })
-            .to({ x: gGameEngine.title2.x + 600 }, 2000, createjs.Ease.getPowInOut(4))
-            .to({ x: gGameEngine.title2.x }, 2000, createjs.Ease.getPowInOut(4));
+        // Stage
         gGameEngine.stage.update();
+    }
+
+    drawTiles() {
+        const tile = new Tile('grass', { x: 0, y: 0 });
+        this.stage.addChild(tile.bmp);
+        this.tiles.push(tile);
     }
 }
 

@@ -4,7 +4,7 @@
   "description": "We want You, to join us in the web castle.",
   "main": "main.js",
   "scripts": {
-    "start": "nodemon ./src/server.js"
+    "joaoIsCool": "nodemon ./src/server.js"
   },
   "repository": {
     "type": "git",
