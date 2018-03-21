@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/AGrigoruta/a-maze-ing.js#readme",
   "dependencies": {
+    "chalk": "2.3.0",
     "express": "^4.16.2",
-    "chalk": "2.3.0"
+    "express.js": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.14.12"

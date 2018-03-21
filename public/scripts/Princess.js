@@ -17,6 +17,12 @@ export default class Princess {
                 idle: [12, 12, 'idle'],
             }
         });
+        
+        this.move = {
+            x: 0,
+            y: 0
+        }
+        
         this.bmp = new createjs.Sprite(spriteSheet);
 
         this.position = position;
@@ -26,5 +32,21 @@ export default class Princess {
 
         gGameEngine.stage.addChild(this.bmp);
     }
+    
+    movePrincess(position, move) {
+        
+        const pixels = Utils.convertToBitmapPosition(position);
+        
+        gGameEngine.princess.position = position;
+        gGameEngine.princess.bmp.x = pixels.x + move.x;
+        gGameEngine.princess.bmp.y = pixels.y + move.y;
 
+        gGameEngine.stage.addChild(gGameEngine.princess.bmp);
+        
+        gGameEngine.princess.position.x = Math.floor(gGameEngine.princess.bmp.x / gGameEngine.tileSize);
+        gGameEngine.princess.position.y = Math.floor(gGameEngine.princess.bmp.y / gGameEngine.tileSize);
+        gGameEngine.princess.move.x = gGameEngine.princess.bmp.x % gGameEngine.tileSize;
+        gGameEngine.princess.move.y = gGameEngine.princess.bmp.y % gGameEngine.tileSize;
+    }
+        
 }

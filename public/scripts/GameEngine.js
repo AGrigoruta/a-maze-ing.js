@@ -12,13 +12,14 @@ class GameEngine {
         this.tileSize = 32;
         this.tilesX = 41;
         this.tilesY = 21;
+        this.princess = null;
         this.size = {
             w: this.tileSize * (this.tilesX + 4),
             h: this.tileSize * this.tilesY
         };
 
         // Asset Objects
-        this.tilesImgs = {};        
+        this.tilesImgs = {};
 
         // Environment Arrays
         this.tiles = [];
@@ -47,7 +48,7 @@ class GameEngine {
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
-        
+
     }
 
     load() {
@@ -64,9 +65,18 @@ class GameEngine {
             that.setup();
         });
         queue.loadManifest([
-            { id: 'princess', src: 'img/betty.png' },
-            { id: 'tile_grass', src: 'img/tile_grass.png' },
-            { id: 'tile_wall', src: 'img/tile_wall.png' }
+            {
+                id: 'princess',
+                src: 'img/betty.png'
+            },
+            {
+                id: 'tile_grass',
+                src: 'img/tile_grass.png'
+            },
+            {
+                id: 'tile_wall',
+                src: 'img/tile_wall.png'
+            }
         ]);
     }
 
@@ -85,7 +95,10 @@ class GameEngine {
         this.drawTiles();
 
         // Lock the princess in the tower >:(
-        var princess = new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
+        this.princess = new Princess({
+            x: this.tilesX + 1,
+            y: Math.floor(this.tilesY / 2)
+        });
 
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
@@ -96,14 +109,23 @@ class GameEngine {
 
     update() {
         if (gInputEngine.actions['up']) {
-            console.log('woah, you are going up');
+            if (gGameEngine.isValidMove(gGameEngine.princess.position, 'up')) {
+                gGameEngine.princess.move.y--;
+            }
         } else if (gInputEngine.actions['down']) {
-            console.log('Are you feeling down?');
+            if (gGameEngine.isValidMove(gGameEngine.princess.position, 'down')) {
+                gGameEngine.princess.move.y++;
+            }
         } else if (gInputEngine.actions['left']) {
-            console.log('To the left, to the left');
+            if (gGameEngine.isValidMove(gGameEngine.princess.position, 'left')) {
+                gGameEngine.princess.move.x--;
+            }
         } else if (gInputEngine.actions['right']) {
-            console.log('Yes yes, you are always right');
+            if (gGameEngine.isValidMove(gGameEngine.princess.position, 'right')) {
+                gGameEngine.princess.move.x++;
+            }
         }
+        gGameEngine.princess.movePrincess(gGameEngine.princess.position, gGameEngine.princess.move);
 
         // Stage
         gGameEngine.stage.update();
@@ -115,12 +137,18 @@ class GameEngine {
             for (let j = 0; j < this.tilesX; j++) {
                 if (this.maze[i][j] === 1) {
                     // Wall tiles
-                    const tile = new Tile('wall', { x: j, y: i });
+                    const tile = new Tile('wall', {
+                        x: j,
+                        y: i
+                    });
                     this.stage.addChild(tile.bmp);
                     this.tiles.push(tile);
                 } else {
                     // Grass tiles
-                    const tile = new Tile('grass', { x: j, y: i });
+                    const tile = new Tile('grass', {
+                        x: j,
+                        y: i
+                    });
                     this.stage.addChild(tile.bmp);
                     this.grassTiles.push(tile);
                 }
@@ -139,14 +167,20 @@ class GameEngine {
                     i >= 4 ||
                     j === 3
                 ) {
-                    const tile = new Tile('wall', { x: this.tilesX - 1 + j, y: verticalTowerEdge + i });
+                    const tile = new Tile('wall', {
+                        x: this.tilesX - 1 + j,
+                        y: verticalTowerEdge + i
+                    });
                     if (j === 0) {
                         this.towerEdgeTiles.push(tile);
                     } else {
                         this.stage.addChild(tile.bmp);
                     }
                 } else {
-                    const tile = new Tile('grass', { x: this.tilesX - 1 + j, y: verticalTowerEdge + i });
+                    const tile = new Tile('grass', {
+                        x: this.tilesX - 1 + j,
+                        y: verticalTowerEdge + i
+                    });
                     this.stage.addChild(tile.bmp);
                 }
             }
@@ -156,11 +190,28 @@ class GameEngine {
         for (let i = 0; i < this.tilesY; i++) {
             for (let j = 0; j < 4; j++) {
                 if (i < verticalTowerEdge || i > verticalTowerEdge + 5) {
-                    const tile = new Tile('grass', { x: this.tilesX + j, y: i });
+                    const tile = new Tile('grass', {
+                        x: this.tilesX + j,
+                        y: i
+                    });
                     this.stage.addChild(tile.bmp);
                 }
             }
         }
+    }
+
+    isValidMove(position, dir) {
+        // Starting point for tower
+        const verticalTowerEdge = (Math.floor(this.tilesY / 2)) - 2;
+        
+        switch (dir) {
+            case 'up': return position.y > verticalTowerEdge;
+            case 'down': return position.y < verticalTowerEdge + 3;
+            case 'left': return position.x >= this.tilesX;
+            case 'right': return position.x < this.tilesX + 1;
+            default: window.alert('ERROR');
+        }
+
     }
 }
 
