@@ -37,7 +37,6 @@ export default class Princess {
         
         const pixels = Utils.convertToBitmapPosition(position);
         
-        gGameEngine.princess.position = position;
         gGameEngine.princess.bmp.x = pixels.x + move.x;
         gGameEngine.princess.bmp.y = pixels.y + move.y;
 
