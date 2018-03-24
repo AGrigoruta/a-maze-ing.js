@@ -10,6 +10,7 @@ export default class Player {
             w: 48,
             h: 48
         };
+        //
         this.alive = true;
         this.controls = {
             'up': 'up',
@@ -59,26 +60,26 @@ export default class Player {
         // TODO
     }
 
-    
+
     // Checks whether we are on corner to target position. Returns position where we should move before we can go to target.
     getCornerFix(dirX, dirY) {
         // TODO
     }
 
-    
+
     // Calculates and updates entity position according to its actual bitmap position
     updatePosition() {
         this.position = Utils.convertToEntityPosition(this.bmp);
     }
 
-    
+
     // Returns true when collision is detected and we should not move to target position
-    
+
     detectWallCollision(position) {
         // TODO
     }
 
-    
+
     // Changes animation if requested animation is not already current
     animate(animation) {
         if (!this.bmp.currentAnimation || this.bmp.currentAnimation.indexOf(animation) === -1) {
