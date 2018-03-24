@@ -12,7 +12,14 @@ export default class Tile {
         this.bmp = null;
         this.material = material;
         this.position = position;
-        let img = gGameEngine.tilesImgs.wall;
+        let img;
+        if (material == 'grass') {
+            img = gGameEngine.tilesImgs.grass;
+        } else if (material == 'wall') {
+            img = gGameEngine.tilesImgs.wall;
+        } else if (material == 'wood') {
+            img = gGameEngine.tilesImgs.wood;
+        }
         this.bmp = new createjs.Bitmap(img);
         const pixels = Utils.convertToBitmapPosition(position);
         this.bmp.x = pixels.x;
