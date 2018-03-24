@@ -56,6 +56,18 @@ export default class Player {
         }
         const position = { x: this.bmp.x, y: this.bmp.y };
 
+
+        let dirX=0;
+        let dirY=0;
+        if(gInputEngine.actions[this.controls.up]){
+            this.animate('up');
+            position.y-=this.velocity;
+            dirY=-1;
+        }else if (gInputEngine.actions[this.controls.down]){
+            this.animate('down');
+            position.y+=this.velocity;
+            dirY=-1;
+
         // TODO
     }
 

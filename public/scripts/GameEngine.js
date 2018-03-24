@@ -114,7 +114,8 @@ class GameEngine {
 
     update() {
         // Player
-        // TODO
+        for(let i=0;i<gGameEngine.players.length;i++)
+            let player
 
         // Stage
         gGameEngine.stage.update();
@@ -179,7 +180,10 @@ class GameEngine {
     }
 
     spawnPlayers() {
-        // TODO
+        this.players=[];
+
+        const player =new player ({x:1 , y:1});
+        this.player.push
     }
 
     
