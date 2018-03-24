@@ -56,6 +56,39 @@ export default class Player {
         }
         const position = { x: this.bmp.x, y: this.bmp.y };
 
+<<<<<<< HEAD
+=======
+        let dirX = 0;
+        let dirY = 0;
+
+        if (gInputEngine.actions[this.controls.up]) {
+            this.animate('up');
+            position.y -= this.velocity;
+            dirY = -1;
+        } else if (gInputEngine.actions[this.controls.down]) {
+            this.animate('down');
+            position.y += this.velocity;
+            dirY = 1;
+        } else if (gInputEngine.actions[this.controls.left]) {
+            this.animate('left');
+            position.x -= this.velocity;
+            dirX = -1;
+        } else if (gInputEngine.actions[this.controls.right]) {
+            this.animate('right');
+            position.x += this.velocity;
+            dirX = 1;
+        } else {
+            this.animate('idle');
+        }
+        if (this.detectWallCollision(position)) {
+            return;
+        }
+
+        this.bmp.x = position.x;
+        this.bmp.y = position.y;
+        this.updatePosition();
+
+>>>>>>> dbb1bf84a783f37e82d27a0d172d717d1ed86780
         // TODO
     }
 
@@ -75,7 +108,34 @@ export default class Player {
     // Returns true when collision is detected and we should not move to target position
     
     detectWallCollision(position) {
+<<<<<<< HEAD
         // TODO
+=======
+        const player = {};
+        player.left = position.x;        
+        player.top = position.y;
+        player.right = position.x + this.size.w;
+        player.bottom = position.y + this.size.h;
+
+
+        const tiles = gGameEngine.tiles;
+        
+        for (let i = 0; i < tiles.length; i++) {
+            
+            const tilePosition = tiles[i].position;
+
+            const tile = {};
+            tile.left = tilePosition.x * gGameEngine.tileSize + 25;        
+            tile.top = tilePosition.y * gGameEngine.tileSize + 20;
+            tile.right = tile.left + gGameEngine.tileSize - 30;
+            tile.bottom = tile.top + gGameEngine.tileSize - 30;
+
+            if (gGameEngine.intersectRect(player, tile)) {
+                return true;
+            }
+        }
+        return false;
+>>>>>>> dbb1bf84a783f37e82d27a0d172d717d1ed86780
     }
 
     
