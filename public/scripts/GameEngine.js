@@ -86,7 +86,7 @@ class GameEngine {
         this.drawTiles();
 
         // Lock the princess in the tower >:(
-        var princess = new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
+        this.princess = new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
 
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
@@ -96,6 +96,7 @@ class GameEngine {
     }
 
     update() {
+        //var princess = new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) }); 
         if (gInputEngine.actions['up']) {
             console.log('woah, you are going up');
         } else if (gInputEngine.actions['down']) {
