@@ -10,7 +10,6 @@ export default class Player {
             w: 48,
             h: 48
         };
-        //
         this.alive = true;
         this.controls = {
             'up': 'up',
