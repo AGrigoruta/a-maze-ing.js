@@ -57,6 +57,34 @@ export default class Player {
         const position = { x: this.bmp.x, y: this.bmp.y };
 
         // TODO
+        let dirX = 0;
+        let dirY = 0;
+
+        if(gInputEngine.actions[this.controls.up]){
+            this.animate('up');
+            this.y -= this.velocity;
+            dirY= -1; // goes UP
+        } else if(gInputEngine.actions[this.controls.down]){
+            this.animate('down');
+            this.y += this.velocity;
+            dirY= 1; // goes down
+        } else if(gInputEngine.actions[this.controls.left]){
+            this.animate('left');
+            this.x -= this.velocity;
+            dirX= -1; // goes LEFT
+        } else if(gInputEngine.actions[this.controls.right]){
+            this.animate('right');
+            this.X += this.velocity;
+            dirX= 1; // goes right
+        }
+        else{
+            this.animate('idle');
+        }
+
+        this.bmp.x = position.x;
+        this.bmp.y = position.y;
+        this.updatePosition();
+        // dirY.updatePosition();
     }
 
     
@@ -76,6 +104,27 @@ export default class Player {
     
     detectWallCollision(position) {
         // TODO
+        const players={};
+        player.top = positon.y;
+        player.left = positon.x;
+        player.right = positon.x + this.size.w;
+        player.bottom = position.y + this.size.h;
+
+        const tiles = gGameEngine.tiles;
+        for(let i=0; i < tiles.length;i++){
+            const tilePosition = tiles[i].position;
+
+            const tiles={};
+            tile.top = tilePosition.y;
+            tile.left = tilePosition.x;
+            tile.right = tilePosition.x + gGameEngine.tileSize.w;
+            tile.bottom = tilePosition.y +  gGameEngine.tileSize.h;
+
+            if(gGameEngine.intersectRect(player,tile)){
+                return true;
+            }
+        }
+        return false;
     }
 
     
