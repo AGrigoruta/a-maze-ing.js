@@ -113,7 +113,10 @@ class GameEngine {
 
     update() {
         // Player
-        // TODO
+        for (let i = 0; i < gGameEngine.players.length; i++) {
+            let player = gGameEngine.players[i];
+            player.update();
+        }
 
         // Stage
         gGameEngine.stage.update();
@@ -136,6 +139,7 @@ class GameEngine {
                 }
             }
         }
+        
 
         // Starting point for tower
         const verticalTowerEdge = (Math.floor(this.tilesY / 2)) - 2;
@@ -178,7 +182,10 @@ class GameEngine {
     }
 
     spawnPlayers() {
-        // TODO
+        this.players= [];
+
+        const player = new Player({x: 1, y: 1});
+        this.players.push(player);
     }
 
 
