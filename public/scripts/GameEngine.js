@@ -59,10 +59,12 @@ class GameEngine {
         const that = this;
         queue.addEventListener('complete', () => {
             that.tilesImgs.wall = queue.getResult('tile_wall');
+            that.tilesImgs.grass = queue.getResult('tile_grass'); 
             that.setup();
         });
         queue.loadManifest([
-            { id: 'tile_wall', src: 'img/tile_wall.png' }
+            { id: 'tile_wall', src: 'img/tile_wall.png' },
+            { id: 'tile_grass', src: 'img/tile_grass.png' }
         ]);
     }
 
@@ -88,11 +90,37 @@ class GameEngine {
     }
 
     drawTiles() {
-        const tile = new Tile('grass', { x: 0, y: 0 });
-        this.stage.addChild(tile.bmp);
-        this.tiles.push(tile);
+        //const tile = new Tile('grass', { x: 0, y: 0 });
+       // this.stage.addChild(tile.bmp);
+       // this.tiles.push(tile);
+       for(let i=0;i<this.tilesY;i++)
+       {
+        for(let j=0;j<this.tilesX;j++)
+        {
+            if(this.maze[i][j]==1)
+            {
+                 const tile = new Tile('wall', { x: i, y: j });
+                 this.stage.addChild(tile.bmp);
+                 this.tiles.push(tile);
+            }
+            else
+            {
+                const tile = new Tile('grass', { x: i, y: j });
+                this.stage.addChild(tile.bmp);
+                this.tiles.push(tile);
+
+            }
+        }
+       }
     }
 }
+    const towerEdgeTiles =Math.round(title.tilesY/2)-2;
+
+    for(let i=0; i<this.tilesY; i++)
+       {
+        for(let j=0; j<this.tilesX; j++)
+        {
+
 
 const gGameEngine = new GameEngine();
 export default gGameEngine;
