@@ -29,7 +29,12 @@ export default class Player {
 
         const spriteSheet = new createjs.SpriteSheet({
             images: [img],
-            frames: { width: this.size.w, height: this.size.h, regX: 10, regY: 12 },
+            frames: {
+                width: this.size.w,
+                height: this.size.h,
+                regX: 10,
+                regY: 12
+            },
             animations: {
                 idle: [0, 0, 'idle'],
                 down: [0, 3, 'down', 0.1],
@@ -54,7 +59,10 @@ export default class Player {
         if (!this.alive) {
             return;
         }
-        const position = { x: this.bmp.x, y: this.bmp.y };
+        const position = {
+            x: this.bmp.x,
+            y: this.bmp.y
+        };
 
         let dirX = 0;
         let dirY = 0;
@@ -99,10 +107,12 @@ export default class Player {
                 this.bmp.y = position.y;
                 this.updatePosition();
             }
+            // Wood collision
+            this.detectWoodCollision(position);
         }
     }
 
-    
+
     // Checks whether we are on corner to target position. Returns position where we should move before we can go to target.
     getCornerFix(dirX, dirY) {
         const edgeSize = 30;
@@ -111,29 +121,44 @@ export default class Player {
         let position = {};
 
         // possible fix position we are going to choose from
-        const pos1 = { x: this.position.x + dirY, y: this.position.y + dirX };
+        const pos1 = {
+            x: this.position.x + dirY,
+            y: this.position.y + dirX
+        };
         const bmp1 = Utils.convertToBitmapPosition(pos1);
 
-        const pos2 = { x: this.position.x - dirY, y: this.position.y - dirX };
+        const pos2 = {
+            x: this.position.x - dirY,
+            y: this.position.y - dirX
+        };
         const bmp2 = Utils.convertToBitmapPosition(pos2);
 
         // in front of current position
-        if (gGameEngine.getTileMaterial({ x: this.position.x + dirX, y: this.position.y + dirY }) == 'grass') {
+        if (gGameEngine.getTileMaterial({
+                x: this.position.x + dirX,
+                y: this.position.y + dirY
+            }) == 'grass') {
             position = this.position;
         }
         // right bottom
         // left top
-        else if (gGameEngine.getTileMaterial(pos1) == 'grass'
-            && Math.abs(this.bmp.y - bmp1.y) < edgeSize && Math.abs(this.bmp.x - bmp1.x) < edgeSize) {
-            if (gGameEngine.getTileMaterial({ x: pos1.x + dirX, y: pos1.y + dirY }) == 'grass') {
+        else if (gGameEngine.getTileMaterial(pos1) == 'grass' &&
+            Math.abs(this.bmp.y - bmp1.y) < edgeSize && Math.abs(this.bmp.x - bmp1.x) < edgeSize) {
+            if (gGameEngine.getTileMaterial({
+                    x: pos1.x + dirX,
+                    y: pos1.y + dirY
+                }) == 'grass') {
                 position = pos1;
             }
         }
         // right top
         // left bottom
-        else if (gGameEngine.getTileMaterial(pos2) == 'grass'
-            && Math.abs(this.bmp.y - bmp2.y) < edgeSize && Math.abs(this.bmp.x - bmp2.x) < edgeSize) {
-            if (gGameEngine.getTileMaterial({ x: pos2.x + dirX, y: pos2.y + dirY }) == 'grass') {
+        else if (gGameEngine.getTileMaterial(pos2) == 'grass' &&
+            Math.abs(this.bmp.y - bmp2.y) < edgeSize && Math.abs(this.bmp.x - bmp2.x) < edgeSize) {
+            if (gGameEngine.getTileMaterial({
+                    x: pos2.x + dirX,
+                    y: pos2.y + dirY
+                }) == 'grass') {
                 position = pos2;
             }
         }
@@ -143,15 +168,15 @@ export default class Player {
         }
     }
 
-    
+
     // Calculates and updates entity position according to its actual bitmap position
     updatePosition() {
         this.position = Utils.convertToEntityPosition(this.bmp);
     }
 
-    
+
     // Returns true when collision is detected and we should not move to target position
-    
+
     detectWallCollision(position) {
         const player = {};
         player.left = position.x;
@@ -177,7 +202,36 @@ export default class Player {
         return false;
     }
 
-    
+    // Detect wood collision
+    detectWoodCollision(position) {
+        const player = {};
+        player.left = position.x;
+        player.top = position.y;
+        player.right = player.left + this.size.w;
+        player.bottom = player.top + this.size.h;
+
+        const woods = gGameEngine.woods;
+        for (let i = 0; i < woods.length; i++) {
+            const woodPosition = woods[i].position;
+
+            const wood = {};
+            wood.left = woodPosition.x * gGameEngine.tileSize + 25;
+            wood.top = woodPosition.y * gGameEngine.tileSize + 20;
+            wood.right = wood.left + gGameEngine.tileSize - 30;
+            wood.bottom = wood.top + gGameEngine.tileSize - 30;
+
+            if (gGameEngine.intersectRect(player, wood)) {
+                gGameEngine.woods[i].bmp.x = gGameEngine.tilesX * gGameEngine.tileSize;
+                gGameEngine.woods[i].bmp.y = gGameEngine.woodNr * gGameEngine.tileSize;
+                gGameEngine.woodNr++;               
+
+                gGameEngine.stage.addChild(gGameEngine.woods[i].bmp);
+                gGameEngine.woods.splice(i, 1);
+            }
+        }
+    }
+
+
     // Changes animation if requested animation is not already current
     animate(animation) {
         if (!this.bmp.currentAnimation || this.bmp.currentAnimation.indexOf(animation) === -1) {
