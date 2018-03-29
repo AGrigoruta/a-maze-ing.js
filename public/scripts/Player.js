@@ -56,41 +56,81 @@ export default class Player {
         }
         const position = { x: this.bmp.x, y: this.bmp.y };
 
-        // TODO
         let dirX = 0;
         let dirY = 0;
 
-        if(gInputEngine.actions[this.controls.up]){
+        if (gInputEngine.actions[this.controls.up]) {
             this.animate('up');
-            this.y -= this.velocity;
-            dirY= -1; // goes UP
-        } else if(gInputEngine.actions[this.controls.down]){
+            position.y -= this.velocity;
+            dirY = -1;
+        } else if (gInputEngine.actions[this.controls.down]) {
             this.animate('down');
-            this.y += this.velocity;
-            dirY= 1; // goes down
-        } else if(gInputEngine.actions[this.controls.left]){
+            position.y += this.velocity;
+            dirY = 1;
+        } else if (gInputEngine.actions[this.controls.left]) {
             this.animate('left');
-            this.x -= this.velocity;
-            dirX= -1; // goes LEFT
-        } else if(gInputEngine.actions[this.controls.right]){
+            position.x -= this.velocity;
+            dirX = -1;
+        } else if (gInputEngine.actions[this.controls.right]) {
             this.animate('right');
-            this.X += this.velocity;
-            dirX= 1; // goes right
-        }
-        else{
+            position.x += this.velocity;
+            dirX = 1;
+        } else {
             this.animate('idle');
+        }
+        if (this.detectWallCollision(position)) {
+            const cornerFix = this.getCornerFix(dirX,dirY);
+            let fixX = 0;
+            let fixY = 0;
+            if(dirX){
+            fixY = (cornerFix.y - this.bmp.y) > 0 ? 1 : -1;
+            } else{
+            fixX = (cornerFix.x - this.bmp.x) > 0 ? 1 : -1;
+            }
+            this.bmp.x += fixX * this.velocity;
+            this.bmp.y = fixY * this.velocity;
+            this.updatePosition();
+
+            return;
         }
 
         this.bmp.x = position.x;
         this.bmp.y = position.y;
         this.updatePosition();
-        // dirY.updatePosition();
     }
 
     
     // Checks whether we are on corner to target position. Returns position where we should move before we can go to target.
     getCornerFix(dirX, dirY) {
         // TODO
+        const edgeSize = 30;
+        const position={};
+
+        const pos1={x: this.position.x + dirY, y:this.position.y+dirX};
+        const bmp1 = Utils.convertToBitmapPosition(pos1);
+
+        const pos2={x: this.position.x - dirY, y:this.position.y-dirX};
+        const bmp2 = Utils.convertToBitmapPosition(pos2);
+
+        if(gGameEngine.getTileMaterial({x:this.position.x + dirX, y:this.position.y+dirY})=== 'grass'){
+            position = this.position;
+        }
+        else if(gGameEngine.getTileMaterial(pos1)==='grass' 
+        && Math.abs(this.bmp.y - bmp1.y < edgeSize)
+        && Math.abs(this.bmp.x - bmp1.x < edgeSize)){
+            if(gGameEngine.getTileMaterial({x: pos1.x + dirX, y:pos1.y+dirY})==="grass"){
+                position = pos1;
+            }
+        }
+        else if(gGameEngine.getTileMaterial(pos2)==='grass'
+        && Math.abs(this.bmp.y - bmp2.y < edgeSize)
+        && Math.abs(this.bmp.x - bmp2.x < edgeSize)){
+            if(gGameEngine.getTileMaterial({x: pos2.x + dirX, y:pos2.y+dirY})==="grass"){
+                position = pos2;
+            }
+        }
+
+        //if(gGameEngine.getTileMaterial(position.x, position.t){}
     }
 
     
@@ -103,24 +143,26 @@ export default class Player {
     // Returns true when collision is detected and we should not move to target position
     
     detectWallCollision(position) {
-        // TODO
-        const players={};
-        player.top = positon.y;
-        player.left = positon.x;
-        player.right = positon.x + this.size.w;
+        const player = {};
+        player.left = position.x;        
+        player.top = position.y;
+        player.right = position.x + this.size.w;
         player.bottom = position.y + this.size.h;
 
+
         const tiles = gGameEngine.tiles;
-        for(let i=0; i < tiles.length;i++){
+        
+        for (let i = 0; i < tiles.length; i++) {
+            
             const tilePosition = tiles[i].position;
 
-            const tiles={};
-            tile.top = tilePosition.y;
-            tile.left = tilePosition.x;
-            tile.right = tilePosition.x + gGameEngine.tileSize.w;
-            tile.bottom = tilePosition.y +  gGameEngine.tileSize.h;
+            const tile = {};
+            tile.left = tilePosition.x * gGameEngine.tileSize + 25;        
+            tile.top = tilePosition.y * gGameEngine.tileSize + 20;
+            tile.right = tile.left + gGameEngine.tileSize - 30;
+            tile.bottom = tile.top + gGameEngine.tileSize - 30;
 
-            if(gGameEngine.intersectRect(player,tile)){
+            if (gGameEngine.intersectRect(player, tile)) {
                 return true;
             }
         }
