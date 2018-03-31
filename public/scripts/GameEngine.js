@@ -34,30 +34,7 @@ class GameEngine {
         this.tiles = [];
         this.grassTiles = [];
         this.towerEdgeTiles = [];
-
-        this.maze = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        ];
+        this.maze = [];
 
     }
 
@@ -132,70 +109,56 @@ class GameEngine {
 
         // Enemies
 
-
         // Stage
         gGameEngine.stage.update();
     }
 
     generateMaze(x, y) {
-        // Init
-        const totalCells = x * y;
+        // Get yourself lost
+        const totalCells = x* y;
         const cells = new Array();
         const unvisited = new Array();
-        for (let i = 0; i < y; i++) {
-            cells[i] = new Array();
-            unvisited[i] = new Array();
-            for (let j = 0; j < x; j++) {
-                cells[i][j] = [0,0,0,0];
-                unvisited[i][j] = true;
-            }
+        for (let i =0 ; i<y ; i++){
+          cells[i] = new Array();
+          unvisited[i] = new Array();
+          for (let j=0; j <x; j++){
+            cells[i][j] = [0,0,0,0]
+            unvisited[i][j]= true;
+          }
         }
-
-        let currentCell = [Math.floor(Math.random() * y), Math.floor(Math.random() * x)]
+        let currentCell = [Math.floor(Math.random() & y), Math.floor(Math.random() & x)]
         const path = [currentCell];
         unvisited[currentCell[0]][currentCell[1]] = false;
-        let visited = 1;
+        let visited = 1 ;
+        while(visited< totalCells){
+          const pot= [
+            [currentCell[0] - 1, currentCell[1], 0,2],
+            [currentCell[0], currentCell[1] + 1, 1, 3],
+            [currentCell[0] + 1, currentCell[1], 2, 0],
+            [currentCell[0], currentCell[1]- 1, 3, 1]
+           ]
+           const neighbours  = new Array();
+           for (let k = 0; k<4; k++){
+             if(
+               pot[k][0]> -1 &&
+               pot{k}[0]< y &&
+               pot[k][1]>-1 &&
+               pot[k][0] < x &&
+               unvisited[pot[k][0]pot[k][1]]
+             ){
+               neighbours.push(pot[k])
+             }
+           }
+           if(neighbours.length){
+             const next = neighbours[Math.floor(Math.random()*neighbours.length)];
 
-        while(visited < totalCells) {
-            const pot = [
-                [currentCell[0] - 1, currentCell[1], 0, 2],
-                [currentCell[0], currentCell[1] + 1, 1, 3],
-                [currentCell[0] + 1, currentCell[1], 2, 0],
-                [currentCell[0], currentCell[1] - 1, 3, 1]
-            ]
-            const neighbours = new Array();
+             cells[currentCell[0]][currentCell[1]][next[2]] = 1
 
-            for (let k = 0; k < 4; k++) {
-                if(
-                    pot[k][0] > -1 &&
-                    pot[k][0] < y &&
-                    pot[k][1] > -1 &&
-                    pot[k][1] < x &&
-                    unvisited[pot[k][0]][pot[k][1]]
-                ) {
-                    neighbours.push(pot[k])
-                }
-            }
-
-            if (neighbours.length) {
-                const next = neighbours[Math.floor(Math.random() * neighbours.length)];
-
-                cells[currentCell[0]][currentCell[1]][next[2]] = 1;
-                cells[next[0]][next[1]][next[3]] = 1;
-
-                unvisited[next[0]][next[1]] = false;
-                visited++;
-                currentCell = [next[0], next[1]];
-                path.push(currentCell);
-            } else {
-                currentCell = path.pop();
-            }
+           }
         }
-        return cells;
     }
-    
+
     drawTiles() {
-        console.log(this.generateMaze(20,10));
         // Draw Maze from hardcoded Array
         for (let i = 0; i < this.tilesY; i++) {
             for (let j = 0; j < this.tilesX; j++) {
