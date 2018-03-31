@@ -130,13 +130,52 @@ class GameEngine {
         }
 
         // Enemies
+        //this.tilesX = "...";
+       // this.tilesY="....";
 
         // Stage
         gGameEngine.stage.update();
     }
 
     generateMaze(x, y) {
-        // Get yourself lost
+       const totalCells = x*x;
+       const cells = new Array();
+       const unvisited = new Array();
+       for(let i=0; i<y; i++)
+       {
+            cells[i]=new Array();
+            unvisited[i]=new Array();
+            for(let j=0; j<y; j++)
+            {
+                cellc[i][j]=[0,0,0,0];
+                unvisited[i][j]=true;
+            }
+
+       }
+       let currentCell=[Math.floor(Math.random() * y), Math.floor(Math.random()*y)];
+       const path = [currentCell];
+       unvisited[currentCell[0]][currentCell[1]];
+       let visited = 1;
+
+       while(visited<totalCells)
+       {
+           const pot=[[currentCell[0] - 1,currentCell[1]],
+           [currentCell[0],currentCell[1]+1],
+           [currentCell[0]+1,currentCell[1]],
+           [currentCell[0],currentCell[1]-1]];
+       }
+       const neighbours = new Array();
+       for(let k=0;k<4;k++)
+       {
+           if(pot[k][0]>-1 &&
+            pot[k][0]<y &&
+            pot[k][1]>-1 &&
+            pot[k][1] <x &&
+            unvisited[pot[k][0]]
+           
+       }
+
+
     }
 
     drawTiles() {
