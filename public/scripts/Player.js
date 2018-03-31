@@ -58,7 +58,6 @@ export default class Player {
 
         let dirX = 0;
         let dirY = 0;
-
         if (gInputEngine.actions[this.controls.up]) {
             this.animate('up');
             position.y -= this.velocity;
@@ -78,21 +77,70 @@ export default class Player {
         } else {
             this.animate('idle');
         }
-        if (this.detectWallCollision(position)) {
-            return;
+
+        if (position.x != this.bmp.x || position.y != this.bmp.y) {
+            if (this.detectWallCollision(position)) {
+                // If we are on the corner, move to the aisle
+                let cornerFix = this.getCornerFix(dirX, dirY);
+                if (cornerFix) {
+                    let fixX = 0;
+                    let fixY = 0;
+                    if (dirX) {
+                        fixY = (cornerFix.y - this.bmp.y) > 0 ? 1 : -1;
+                    } else {
+                        fixX = (cornerFix.x - this.bmp.x) > 0 ? 1 : -1;
+                    }
+                    this.bmp.x += fixX * this.velocity;
+                    this.bmp.y += fixY * this.velocity;
+                    this.updatePosition();
+                }
+            } else {
+                this.bmp.x = position.x;
+                this.bmp.y = position.y;
+                this.updatePosition();
+            }
         }
-
-        this.bmp.x = position.x;
-        this.bmp.y = position.y;
-        this.updatePosition();
-
-        // TODO
     }
 
     
     // Checks whether we are on corner to target position. Returns position where we should move before we can go to target.
     getCornerFix(dirX, dirY) {
-        // TODO
+        const edgeSize = 30;
+
+        // fix position to where we should go first
+        let position = {};
+
+        // possible fix position we are going to choose from
+        const pos1 = { x: this.position.x + dirY, y: this.position.y + dirX };
+        const bmp1 = Utils.convertToBitmapPosition(pos1);
+
+        const pos2 = { x: this.position.x - dirY, y: this.position.y - dirX };
+        const bmp2 = Utils.convertToBitmapPosition(pos2);
+
+        // in front of current position
+        if (gGameEngine.getTileMaterial({ x: this.position.x + dirX, y: this.position.y + dirY }) == 'grass') {
+            position = this.position;
+        }
+        // right bottom
+        // left top
+        else if (gGameEngine.getTileMaterial(pos1) == 'grass'
+            && Math.abs(this.bmp.y - bmp1.y) < edgeSize && Math.abs(this.bmp.x - bmp1.x) < edgeSize) {
+            if (gGameEngine.getTileMaterial({ x: pos1.x + dirX, y: pos1.y + dirY }) == 'grass') {
+                position = pos1;
+            }
+        }
+        // right top
+        // left bottom
+        else if (gGameEngine.getTileMaterial(pos2) == 'grass'
+            && Math.abs(this.bmp.y - bmp2.y) < edgeSize && Math.abs(this.bmp.x - bmp2.x) < edgeSize) {
+            if (gGameEngine.getTileMaterial({ x: pos2.x + dirX, y: pos2.y + dirY }) == 'grass') {
+                position = pos2;
+            }
+        }
+
+        if (position.x && gGameEngine.getTileMaterial(position) == 'grass') {
+            return Utils.convertToBitmapPosition(position);
+        }
     }
 
     
@@ -106,20 +154,18 @@ export default class Player {
     
     detectWallCollision(position) {
         const player = {};
-        player.left = position.x;        
+        player.left = position.x;
         player.top = position.y;
-        player.right = position.x + this.size.w;
-        player.bottom = position.y + this.size.h;
+        player.right = player.left + this.size.w;
+        player.bottom = player.top + this.size.h;
 
-
+        // Check possible collision with all wall and wood tiles
         const tiles = gGameEngine.tiles;
-        
         for (let i = 0; i < tiles.length; i++) {
-            
             const tilePosition = tiles[i].position;
 
             const tile = {};
-            tile.left = tilePosition.x * gGameEngine.tileSize + 25;        
+            tile.left = tilePosition.x * gGameEngine.tileSize + 25;
             tile.top = tilePosition.y * gGameEngine.tileSize + 20;
             tile.right = tile.left + gGameEngine.tileSize - 30;
             tile.bottom = tile.top + gGameEngine.tileSize - 30;
