@@ -153,64 +153,80 @@ class GameEngine {
              const next = neighbours[Math.floor(Math.random()*neighbours.length)];
 
              cells[currentCell[0]][currentCell[1]][next[2]] = 1
+             cells[next[0]][next[1]][next[3]] = 1;
+
+             unvisited[next[0]][next[1]] = false;
+
 
            }
         }
     }
 
     drawTiles() {
+      console.log(this.generateMaze(20,10));
+      for (var i = 0; i < this.tilesY; i++) {
+        for (var j = 0; j < this.tilesX; j++) {
+          if(
+            i === 0 ||
+            j === 0 ||
+            i === this.tilesY - 1 ||
+            j === this.tilesX - 1 ||
+            (j % 2 === 0 && i % 2 === 0)
+          )
+        }
+      }
         // Draw Maze from hardcoded Array
-        for (let i = 0; i < this.tilesY; i++) {
-            for (let j = 0; j < this.tilesX; j++) {
-                if (this.maze[i][j] === 1) {
-                    // Wall tiles
-                    const tile = new Tile('wall', { x: j, y: i });
-                    this.stage.addChild(tile.bmp);
-                    this.tiles.push(tile);
-                } else {
-                    // Grass tiles
-                    const tile = new Tile('grass', { x: j, y: i });
-                    this.stage.addChild(tile.bmp);
-                    this.grassTiles.push(tile);
-                }
-            }
-        }
-
-
-        // Starting point for tower
-        const verticalTowerEdge = (Math.floor(this.tilesY / 2)) - 2;
-
-        // Draw princess tower
-        for (let i = 0; i < 6; i++) {
-            for (let j = 0; j < 4; j++) {
-                if (
-                    i === 0 ||
-                    j === 0 ||
-                    i >= 4 ||
-                    j === 3
-                ) {
-                    const tile = new Tile('wall', { x: this.tilesX - 1 + j, y: verticalTowerEdge + i });
-                    if (j === 0) {
-                        this.towerEdgeTiles.push(tile);
-                    } else {
-                        this.stage.addChild(tile.bmp);
-                    }
-                } else {
-                    const tile = new Tile('grass', { x: this.tilesX - 1 + j, y: verticalTowerEdge + i });
-                    this.stage.addChild(tile.bmp);
-                }
-            }
-        }
-
-        // Fill the void with grass, make the world pretty
-        for (let i = 0; i < this.tilesY; i++) {
-            for (let j = 0; j < 4; j++) {
-                if (i < verticalTowerEdge || i > verticalTowerEdge + 5) {
-                    const tile = new Tile('grass', { x: this.tilesX + j, y: i });
-                    this.stage.addChild(tile.bmp);
-                }
-            }
-        }
+        // for (let i = 0; i < this.tilesY; i++) {
+        //     for (let j = 0; j < this.tilesX; j++) {
+        //         if (this.maze[i][j] === 1) {
+        //             // Wall tiles
+        //             const tile = new Tile('wall', { x: j, y: i });
+        //             this.stage.addChild(tile.bmp);
+        //             this.tiles.push(tile);
+        //         } else {
+        //             // Grass tiles
+        //             const tile = new Tile('grass', { x: j, y: i });
+        //             this.stage.addChild(tile.bmp);
+        //             this.grassTiles.push(tile);
+        //         }
+        //     }
+        // }
+        //
+        //
+        // // Starting point for tower
+        // const verticalTowerEdge = (Math.floor(this.tilesY / 2)) - 2;
+        //
+        // // Draw princess tower
+        // for (let i = 0; i < 6; i++) {
+        //     for (let j = 0; j < 4; j++) {
+        //         if (
+        //             i === 0 ||
+        //             j === 0 ||
+        //             i >= 4 ||
+        //             j === 3
+        //         ) {
+        //             const tile = new Tile('wall', { x: this.tilesX - 1 + j, y: verticalTowerEdge + i });
+        //             if (j === 0) {
+        //                 this.towerEdgeTiles.push(tile);
+        //             } else {
+        //                 this.stage.addChild(tile.bmp);
+        //             }
+        //         } else {
+        //             const tile = new Tile('grass', { x: this.tilesX - 1 + j, y: verticalTowerEdge + i });
+        //             this.stage.addChild(tile.bmp);
+        //         }
+        //     }
+        // }
+        //
+        // // Fill the void with grass, make the world pretty
+        // for (let i = 0; i < this.tilesY; i++) {
+        //     for (let j = 0; j < 4; j++) {
+        //         if (i < verticalTowerEdge || i > verticalTowerEdge + 5) {
+        //             const tile = new Tile('grass', { x: this.tilesX + j, y: i });
+        //             this.stage.addChild(tile.bmp);
+        //         }
+        //     }
+        // }
     }
 
     drawWoods() {
