@@ -139,7 +139,7 @@ class GameEngine {
                 }
             }
         }
-        
+
 
         // Starting point for tower
         const verticalTowerEdge = (Math.floor(this.tilesY / 2)) - 2;
@@ -178,7 +178,18 @@ class GameEngine {
     }
 
     drawWoods() {
-        // TODO
+        const available = [];
+
+        for (let i = 0; i < this.grassTiles.length; i++){
+          available.push(this.grassTiles[i]);
+        }
+        available.sort(()=>{
+          return 0.5 - Math.random();
+        });
+        for (let i = o; i< 5 ; i ++){
+          const tile = available[i];
+          const
+        }
     }
 
     spawnPlayers() {

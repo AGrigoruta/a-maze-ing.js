@@ -78,20 +78,54 @@ export default class Player {
         } else {
             this.animate('idle');
         }
-        if (this.detectWallCollision(position)) {
-            return;
+        if(position.x != this.bmp.x || position.y != this.bmp.y){
+          if (this.detectWallCollision(position)) {
+              const cornerFix = this.getCornerFix(dirX, dirY);
+              let fixX = 0;
+              let fixY = 0;
+              if(dirX){
+                fixY = (cornerFix.y - this.bmp.y)> 0? 1 : -1;
+              } else {
+                fixX = (cornerFix.x - this.bmp.x) > 0 ? 1 : -1;
+              }
+              this.bmp.x += fixX  * this.velocity;
+              this.bmp.y += FixY * this.velocity;
+              this.updatePosition()
+          }
+        } else{
+          this.bmp.x = position.x;
+          this.bmp.y = position.y;
+          this.updatePosition();
         }
+
 
         this.bmp.x = position.x;
         this.bmp.y = position.y;
         this.updatePosition();
 
         // TODO
-    }
+
 
 
     // Checks whether we are on corner to target position. Returns position where we should move before we can go to target.
     getCornerFix(dirX, dirY) {
+      const edgeSize = 30;
+
+      const position = {};
+
+      const post1 = { x : this.position.x + dirY, y : this.position.y + dirX};
+      const bmp1  = Utils.convertToBitmapPosition(post1);
+
+      const post2 = { x: this.position.x - dirY, y : this.position.y - dirX};
+      const bmp2 = Utils.convertToBitmapPosition(post2);
+
+      if ( gGameEngine.getTileMaterial(x: this.position.x + dirX, y: this.position.y +dirY) === 'grass'){
+        position = this.position;
+      }
+      else if (gGameEngine.getTileMaterial(post1) === 'grass'
+    && Math.abs(this.bmp.y - bmp1 < const edgeSize)
+    && Math.abs(this.bmp.x - bmp)
+  )
         // TODO
     }
 
@@ -104,22 +138,22 @@ export default class Player {
 
     // Returns true when collision is detected and we should not move to target position
 
-    detectWallCollision(position) {
+    detectWallCollision(position){
         const player = {};
-        player.left = position.x;        
+        player.left = position.x;
         player.top = position.y;
         player.right = position.x + this.size.w;
         player.bottom = position.y + this.size.h;
 
 
         const tiles = gGameEngine.tiles;
-        
+
         for (let i = 0; i < tiles.length; i++) {
-            
+
             const tilePosition = tiles[i].position;
 
             const tile = {};
-            tile.left = tilePosition.x * gGameEngine.tileSize + 25;        
+            tile.left = tilePosition.x * gGameEngine.tileSize + 25;
             tile.top = tilePosition.y * gGameEngine.tileSize + 20;
             tile.right = tile.left + gGameEngine.tileSize - 30;
             tile.bottom = tile.top + gGameEngine.tileSize - 30;
