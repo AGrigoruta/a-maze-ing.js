@@ -138,6 +138,22 @@ class GameEngine {
 
     generateMaze(x, y) {
         // Get yourself lost
+        const totalCells = x*y;
+        const cells = new Array();
+        const unvis = new Array(); //unvisited cells
+        for(let i = 0 ; i<y; i++){
+            cells[i] = new Array();
+            unvis[i] = new Array();
+            for(let j= 0; j<x ; j++){
+                cells[i][j] = [0,0,0,0];
+                unvis[i][j] = true;
+            }
+        }
+
+        let curretnCell = [Math.floor(Math.random() * y) , Math.floor(Math.random() * x)];
+        const path = [curretnCell];
+        unvis[curretnCell[0]][curretnCell[1]];
+        let visited = 1;
     }
 
     drawTiles() {
