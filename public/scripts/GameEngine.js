@@ -3,6 +3,7 @@ import Tile from './Tile.js';
 import Princess from './Princess.js';
 import Player from './Player.js';
 import Wood from './Wood.js';
+import Enemy from './Enemy.js';
 
 class GameEngine {
     constructor() {
@@ -21,11 +22,14 @@ class GameEngine {
 
         // Asset Objects
         this.playerBoyImg = null;
+        this.princessImg = null;
+        this.enemyImg = null;
         this.woodImg = null;
         this.tilesImgs = {};
 
         // Environment Arrays
         this.players = [];
+        this.enemies = [];        
         this.woods = [];
         this.tiles = [];
         this.grassTiles = [];
@@ -66,6 +70,7 @@ class GameEngine {
         queue.addEventListener('complete', () => {
             that.playerBoyImg = queue.getResult('player');
             that.princessImg = queue.getResult('princess');
+            that.enemyImg = queue.getResult('enemy');
             that.woodImg = queue.getResult('wood');
             that.tilesImgs.grass = queue.getResult('tile_grass');
             that.tilesImgs.wall = queue.getResult('tile_wall');
@@ -74,6 +79,7 @@ class GameEngine {
         queue.loadManifest([
             { id: 'player', src: 'img/george.png' },
             { id: 'princess', src: 'img/betty.png' },
+            { id: 'enemy', src: 'img/dino.png' },
             { id: 'wood', src: 'img/wood.png' },
             { id: 'tile_grass', src: 'img/tile_grass.png' },
             { id: 'tile_wall', src: 'img/tile_wall.png' }
@@ -87,6 +93,8 @@ class GameEngine {
         }
 
         // Reset environment states
+        this.players = [];
+        this.enemies = [];
         this.woods = [];
         this.tiles = [];
         this.grassTiles = [];
@@ -96,13 +104,20 @@ class GameEngine {
         this.drawTiles();
 
         // Add wood logs on the map
+<<<<<<< HEAD
 
+=======
+        this.drawWoods();
+>>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
 
         // Spawn yourself
         this.spawnPlayers();
 
+        //Release the kraken!
+        this.spawnEnemies();
+
         // Lock the princess in the tower >:(
-        const princess = new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
+        new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
 
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
@@ -114,12 +129,18 @@ class GameEngine {
     update() {
         // Player
         for (let i = 0; i < gGameEngine.players.length; i++) {
-            let player = gGameEngine.players[i];
+            const player = gGameEngine.players[i];
             player.update();
         }
 
+        // Enemies
+
         // Stage
         gGameEngine.stage.update();
+    }
+
+    generateMaze(x, y) {
+        // Get yourself lost
     }
 
     drawTiles() {
@@ -180,6 +201,7 @@ class GameEngine {
     drawWoods() {
         const available = [];
 
+<<<<<<< HEAD
         for (let i = 0; i < this.grassTiles.length; i++){
           available.push(this.grassTiles[i]);
         }
@@ -189,6 +211,20 @@ class GameEngine {
         for (let i = o; i< 5 ; i ++){
           const tile = available[i];
           const
+=======
+        for (let i = 0; i < this.grassTiles.length; i++) {
+            available.push(this.grassTiles[i]);
+        }
+
+        available.sort(() => {
+            return 0.5 - Math.random();
+        });
+
+        for(let i = 0; i < 5; i ++) {
+            const tile = available[i];
+            const wood = new Wood(tile.position);
+            this.woods.push(wood);
+>>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
         }
     }
 
@@ -199,7 +235,15 @@ class GameEngine {
         this.players.push(player);
     }
 
+<<<<<<< HEAD
 
+=======
+    spawnEnemies() {
+        // Ruuuuun
+    }
+
+    
+>>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
     // Checks whether two rectangles intersect.
     intersectRect(a, b) {
         return (
