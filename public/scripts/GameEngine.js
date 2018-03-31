@@ -97,7 +97,7 @@ class GameEngine {
         this.drawTiles();
 
         // Add wood logs on the map
-        
+        this.drawWoods();
 
         // Spawn yourself
         this.spawnPlayers();
@@ -179,7 +179,21 @@ class GameEngine {
     }
 
     drawWoods() {
-        // TODO
+        const available = [];
+
+        for (let i = 0; i < this.grassTiles.length; i++) {
+            available.push(this.grassTiles[i]);
+        }
+
+        available.sort(() => {
+            return 0.5 - Math.random();
+        });
+
+        for(let i = 0; i < 5; i ++) {
+            const tile = available[i];
+            const wood = new Wood(tile.position);
+            this.woods.push(wood);
+        }
     }
 
     spawnPlayers() {
