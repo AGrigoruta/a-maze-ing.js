@@ -56,8 +56,6 @@ export default class Player {
         }
         const position = { x: this.bmp.x, y: this.bmp.y };
 
-<<<<<<< HEAD
-=======
         let dirX = 0;
         let dirY = 0;
 
@@ -88,7 +86,6 @@ export default class Player {
         this.bmp.y = position.y;
         this.updatePosition();
 
->>>>>>> dbb1bf84a783f37e82d27a0d172d717d1ed86780
         // TODO
     }
 
@@ -108,9 +105,6 @@ export default class Player {
     // Returns true when collision is detected and we should not move to target position
     
     detectWallCollision(position) {
-<<<<<<< HEAD
-        // TODO
-=======
         const player = {};
         player.left = position.x;        
         player.top = position.y;
@@ -135,7 +129,6 @@ export default class Player {
             }
         }
         return false;
->>>>>>> dbb1bf84a783f37e82d27a0d172d717d1ed86780
     }
 
     
