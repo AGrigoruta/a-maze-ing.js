@@ -29,7 +29,7 @@ class GameEngine {
 
         // Environment Arrays
         this.players = [];
-        this.enemies = [];        
+        this.enemies = [];
         this.woods = [];
         this.tiles = [];
         this.grassTiles = [];
@@ -104,11 +104,7 @@ class GameEngine {
         this.drawTiles();
 
         // Add wood logs on the map
-<<<<<<< HEAD
-
-=======
         this.drawWoods();
->>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
 
         // Spawn yourself
         this.spawnPlayers();
@@ -201,17 +197,6 @@ class GameEngine {
     drawWoods() {
         const available = [];
 
-<<<<<<< HEAD
-        for (let i = 0; i < this.grassTiles.length; i++){
-          available.push(this.grassTiles[i]);
-        }
-        available.sort(()=>{
-          return 0.5 - Math.random();
-        });
-        for (let i = o; i< 5 ; i ++){
-          const tile = available[i];
-          const
-=======
         for (let i = 0; i < this.grassTiles.length; i++) {
             available.push(this.grassTiles[i]);
         }
@@ -224,7 +209,6 @@ class GameEngine {
             const tile = available[i];
             const wood = new Wood(tile.position);
             this.woods.push(wood);
->>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
         }
     }
 
@@ -235,15 +219,11 @@ class GameEngine {
         this.players.push(player);
     }
 
-<<<<<<< HEAD
-
-=======
     spawnEnemies() {
         // Ruuuuun
     }
 
-    
->>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
+
     // Checks whether two rectangles intersect.
     intersectRect(a, b) {
         return (

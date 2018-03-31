@@ -77,34 +77,6 @@ export default class Player {
         } else {
             this.animate('idle');
         }
-<<<<<<< HEAD
-        if(position.x != this.bmp.x || position.y != this.bmp.y){
-          if (this.detectWallCollision(position)) {
-              const cornerFix = this.getCornerFix(dirX, dirY);
-              let fixX = 0;
-              let fixY = 0;
-              if(dirX){
-                fixY = (cornerFix.y - this.bmp.y)> 0? 1 : -1;
-              } else {
-                fixX = (cornerFix.x - this.bmp.x) > 0 ? 1 : -1;
-              }
-              this.bmp.x += fixX  * this.velocity;
-              this.bmp.y += FixY * this.velocity;
-              this.updatePosition()
-          }
-        } else{
-          this.bmp.x = position.x;
-          this.bmp.y = position.y;
-          this.updatePosition();
-        }
-
-
-        this.bmp.x = position.x;
-        this.bmp.y = position.y;
-        this.updatePosition();
-
-        // TODO
-=======
 
         if (position.x != this.bmp.x || position.y != this.bmp.y) {
             if (this.detectWallCollision(position)) {
@@ -129,32 +101,10 @@ export default class Player {
             }
         }
     }
->>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
-
 
 
     // Checks whether we are on corner to target position. Returns position where we should move before we can go to target.
     getCornerFix(dirX, dirY) {
-<<<<<<< HEAD
-      const edgeSize = 30;
-
-      const position = {};
-
-      const post1 = { x : this.position.x + dirY, y : this.position.y + dirX};
-      const bmp1  = Utils.convertToBitmapPosition(post1);
-
-      const post2 = { x: this.position.x - dirY, y : this.position.y - dirX};
-      const bmp2 = Utils.convertToBitmapPosition(post2);
-
-      if ( gGameEngine.getTileMaterial(x: this.position.x + dirX, y: this.position.y +dirY) === 'grass'){
-        position = this.position;
-      }
-      else if (gGameEngine.getTileMaterial(post1) === 'grass'
-    && Math.abs(this.bmp.y - bmp1 < const edgeSize)
-    && Math.abs(this.bmp.x - bmp)
-  )
-        // TODO
-=======
         const edgeSize = 30;
 
         // fix position to where we should go first
@@ -191,7 +141,6 @@ export default class Player {
         if (position.x && gGameEngine.getTileMaterial(position) == 'grass') {
             return Utils.convertToBitmapPosition(position);
         }
->>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
     }
 
 
@@ -203,7 +152,7 @@ export default class Player {
 
     // Returns true when collision is detected and we should not move to target position
 
-    detectWallCollision(position){
+    detectWallCollision(position) {
         const player = {};
         player.left = position.x;
         player.top = position.y;
@@ -212,13 +161,7 @@ export default class Player {
 
         // Check possible collision with all wall and wood tiles
         const tiles = gGameEngine.tiles;
-<<<<<<< HEAD
-
         for (let i = 0; i < tiles.length; i++) {
-
-=======
-        for (let i = 0; i < tiles.length; i++) {
->>>>>>> e07b132489b0efb7a18dcd18aeb7b227e1b206be
             const tilePosition = tiles[i].position;
 
             const tile = {};
