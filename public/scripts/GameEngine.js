@@ -26,7 +26,7 @@ class GameEngine {
         this.enemyImg = null;
         this.woodImg = null;
         this.tilesImgs = {};
-        this.enemyNumber = 1;
+        this.enemyNumber = 0;
 
         // Environment Arrays
         this.players = [];
@@ -561,6 +561,7 @@ class GameEngine {
             y: this.tilesY / 2 * this.tileSize
         });
         this.stage.addChild(this.text3);
+        document.getElementById('reset').textContent = 'Start';
     }
 
     // Player tower key
@@ -611,6 +612,7 @@ class GameEngine {
             y: this.tilesY / 2 * this.tileSize
         });
         this.stage.addChild(this.text3);
+        document.getElementById('reset').textContent = 'Start';
     }
 }
 
