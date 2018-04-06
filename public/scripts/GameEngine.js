@@ -26,7 +26,7 @@ class GameEngine {
         this.enemyImg = null;
         this.woodImg = null;
         this.tilesImgs = {};
-        this.enemyNumber = 10;
+        this.enemyNumber = 1;
 
         // Environment Arrays
         this.players = [];
@@ -483,7 +483,7 @@ class GameEngine {
                 saveTiles[i]--;
             }
         }
-        
+
         // if exist, remove the wall from the entrance of the princess tower
         if (this.getTileMaterial({
                 x: this.tilesX - 2,
@@ -563,6 +563,20 @@ class GameEngine {
         this.stage.addChild(this.text3);
     }
 
+    // Player tower key
+    getKey() {
+        this.stage.removeChild(this.text1);
+        this.stage.removeChild(this.scoreP);
+        this.stage.removeChild(this.playerWood.bmp);
+
+        this.textKey = new createjs.Text("x 1 Key", "17px Arial", "black");
+        this.textKey.set({
+            x: (this.tilesX + 1) * this.tileSize + 3,
+            y: 5
+        });
+        this.stage.addChild(this.textKey);
+    }
+
     // remove wall from tiles
     removeTile(position) {
         for (let i = 0; i < this.tiles.length; i++) {
@@ -574,21 +588,23 @@ class GameEngine {
     }
 
     // replace wall with grass at princess tower
-    openTower() {
-            this.removeTile({
-                x: this.tilesX - 1,
-                y: 10
-            });
-            const tile = new Tile('grass', {
-                x: this.tilesX - 1,
-                y: 10
-            });
-            this.stage.addChild(tile.bmp);
-            this.grassTiles.push(tile);        
+    openTower(player) {
+        this.removeTile({
+            x: this.tilesX - 1,
+            y: 10
+        });
+        const tile = new Tile('grass', {
+            x: this.tilesX - 1,
+            y: 10
+        });
+        this.stage.addChild(tile.bmp);
+        this.grassTiles.push(tile);
+        this.stage.removeChild(player.bmp);
+        this.stage.addChild(player.bmp);
     }
 
     // Win the game message
-    win(player) {
+    win() {
         this.text3 = new createjs.Text("THE PRINCESS IS FREE", "77px Arial", "blue");
         this.text3.set({
             x: 8 * this.tileSize,

@@ -45,7 +45,7 @@ export default class Enemy {
 
     // ============================= MY CODE ==============================
 
-    // check if players is alive
+    // move enemy and check players collision with monsters
     update() {
         this.moveEnemy();
         for (let activePlayer of gGameEngine.players) {
@@ -216,17 +216,17 @@ export default class Enemy {
     }
 
     // detect player collision with enemies
-    detectPlayerCollision(position) {
+    detectPlayerCollision(position) {        
         const player = {};
         player.left = position.x;
         player.top = position.y;
-        player.right = player.left + 48;
-        player.bottom = player.top + 48;
+        player.right = player.left + 32;
+        player.bottom = player.top + 32;
 
         // Check possible collision with active enemy
         const activeEnemy = {};
-        activeEnemy.left = this.bmp.x
-        activeEnemy.top = this.bmp.y
+        activeEnemy.left = this.bmp.x;
+        activeEnemy.top = this.bmp.y;
         activeEnemy.right = activeEnemy.left + this.size.w;
         activeEnemy.bottom = activeEnemy.top + this.size.h;
 

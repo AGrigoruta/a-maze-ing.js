@@ -113,9 +113,14 @@ export default class Player {
             }
             // Wood collision
             this.detectWoodCollision(position);
-            gGameEngine.playerScore(this.woodNr);
-            gGameEngine.stage.getChildByName("score");
-            this.detectWin();
+
+            if (this.open) {
+                this.detectEndPosition();
+                this.detectWin();
+            } else {
+                gGameEngine.playerScore(this.woodNr);
+                gGameEngine.stage.getChildByName("score");
+            }
         }
     }
 
@@ -235,16 +240,23 @@ export default class Player {
                 gGameEngine.stage.removeChild(gGameEngine.woods[i].bmp);
                 gGameEngine.woods.splice(i, 1);
                 if (this.woodNr > 2 && !this.open) {
-                    gGameEngine.openTower();
                     this.open = true;
+                    gGameEngine.getKey();
                 }
             }
         }
     }
 
+    detectEndPosition() {
+        if (this.position.x === gGameEngine.tilesX - 2 && this.position.y === 10) {
+            
+            gGameEngine.openTower(this);
+        }
+    }
+
     detectWin() {
-        if (this.position.x === gGameEngine.tilesX - 1 && (this.position.y === 9 || this.position.y === 10 || this.position.y === 11)) {
-            gGameEngine.win(this);
+        if (this.position.x === gGameEngine.tilesX - 1 && this.position.y === 10) {
+            gGameEngine.win();
         }
     }
 
