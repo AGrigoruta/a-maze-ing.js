@@ -1,6 +1,7 @@
 import gGameEngine from './GameEngine.js';
 import Utils from './Utils.js';
 import Player from './Player.js';
+import PlayerAI from './PlayerAI.js';
 
 export default class Enemy {
 
@@ -13,7 +14,7 @@ export default class Enemy {
         this.move = {
             x: 0,
             y: 0
-        }
+        };
         this.direction = 'right';
         this.dirX = 1;
         this.dirY = 0;
@@ -48,13 +49,23 @@ export default class Enemy {
     // move enemy and check players collision with monsters
     update() {
         this.moveEnemy();
+        // player human collision
         for (let activePlayer of gGameEngine.players) {
             if (this.detectPlayerCollision({
                     x: activePlayer.bmp.x,
                     y: activePlayer.bmp.y
                 })) {
                 activePlayer.alive = false;
+                activePlayer.animate('dead');
             }
+        }
+        // playerAI collision
+        if (this.detectPlayerAICollision({
+                x: gGameEngine.playerAI.bmp.x,
+                y: gGameEngine.playerAI.bmp.y
+            })) {
+            gGameEngine.playerAI.alive = false;
+            gGameEngine.playerAI.animate('dead');
         }
     }
 
@@ -216,12 +227,33 @@ export default class Enemy {
     }
 
     // detect player collision with enemies
-    detectPlayerCollision(position) {        
+    detectPlayerCollision(position) {
         const player = {};
         player.left = position.x;
         player.top = position.y;
-        player.right = player.left + 32;
-        player.bottom = player.top + 32;
+        player.right = player.left + 28;
+        player.bottom = player.top + 28;
+
+        // Check possible collision with active enemy
+        const activeEnemy = {};
+        activeEnemy.left = this.bmp.x;
+        activeEnemy.top = this.bmp.y;
+        activeEnemy.right = activeEnemy.left + this.size.w;
+        activeEnemy.bottom = activeEnemy.top + this.size.h;
+
+        if (gGameEngine.intersectRect(player, activeEnemy)) {
+            return true;
+        }
+        return false;
+    }
+
+    // detect player AI collision with enemies
+    detectPlayerAICollision(position) {
+        const player = {};
+        player.left = position.x;
+        player.top = position.y;
+        player.right = player.left + 28;
+        player.bottom = player.top + 28;
 
         // Check possible collision with active enemy
         const activeEnemy = {};

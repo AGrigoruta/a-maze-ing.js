@@ -2,6 +2,7 @@ import gInputEngine from './InputEngine.js';
 import Tile from './Tile.js';
 import Princess from './Princess.js';
 import Player from './Player.js';
+import PlayerAI from './PlayerAI.js';
 import Wood from './Wood.js';
 import Enemy from './Enemy.js';
 
@@ -35,7 +36,8 @@ class GameEngine {
         this.tiles = [];
         this.grassTiles = [];
         this.towerEdgeTiles = [];
-
+        this.playerAI = null;
+        this.end = false;
     }
 
     load() {
@@ -95,6 +97,7 @@ class GameEngine {
         this.tiles = [];
         this.grassTiles = [];
         this.towerEdgeTiles = [];
+        this.emptyAI = false;
 
         // Draw tiles
         this.drawTiles();
@@ -108,6 +111,13 @@ class GameEngine {
         // Spawn yourself
         this.spawnPlayers();
         this.score();
+
+        // Spawn player AI
+        this.playerAI = new PlayerAI({
+            x: 1,
+            y: gGameEngine.tilesY - 2
+        });
+        this.scoreAI();
 
         //Release the kraken!
         this.spawnEnemies();
@@ -127,13 +137,15 @@ class GameEngine {
 
     update() {
         // Player
-        if (gGameEngine.players.length) {
-            for (let i = 0; i < gGameEngine.players.length; i++) {
-                const player = gGameEngine.players[i];
-                if (!player.alive) {
-                    gGameEngine.players.splice(i, 1);
+        if (!gGameEngine.end) {
+            if (gGameEngine.players.length) {
+                for (let i = 0; i < gGameEngine.players.length; i++) {
+                    const player = gGameEngine.players[i];
+                    if (!player.alive) {
+                        gGameEngine.players.splice(i, 1);
+                    }
+                    player.update();
                 }
-                player.update();
             }
 
             // Enemies
@@ -141,11 +153,24 @@ class GameEngine {
                 const enemy = gGameEngine.enemies[i];
                 enemy.update();
             }
-        } else {
-            gGameEngine.end();
+
+            // player AI
+            if (!gGameEngine.players.length && !gGameEngine.playerAI.alive) {
+                gGameEngine.endGame();
+                gGameEngine.end = true;
+            }
+            if (!gGameEngine.emptyAI) {
+                if (gGameEngine.playerAI.alive) {
+                    gGameEngine.playerAI.update();
+                } else {
+                    gGameEngine.removePlayerAIScore();
+                    gGameEngine.emptyAI = true;
+                }
+            }
+
+            // Stage
+            gGameEngine.stage.update();
         }
-        // Stage
-        gGameEngine.stage.update();
     }
 
     generateMaze(x, y) {
@@ -328,7 +353,7 @@ class GameEngine {
             return 0.5 - Math.random();
         });
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 6; i++) {
             const tile = available[i];
             const wood = new Wood(tile.position);
             this.woods.push(wood);
@@ -462,7 +487,7 @@ class GameEngine {
                     x: tilePosition.x,
                     y: tilePosition.y + 1
                 }) === 'grass' &&
-                nrTiles < 15) {
+                nrTiles < 17) {
                 nrTiles++;
                 saveTiles.push(availablePath[i]);
                 const tile = new Tile('grass', {
@@ -502,31 +527,48 @@ class GameEngine {
         }
     }
 
+    // remove wall from tiles
+    removeTile(position) {
+        for (let i = 0; i < this.tiles.length; i++) {
+            const tile = this.tiles[i];
+            if (tile.position.x == position.x && tile.position.y == position.y) {
+                this.tiles.splice(i, 1);
+            }
+        }
+    }
+
     // Score text
     score() {
 
+        this.text0 = new createjs.Text("Player", "bold 17px Arial", "black");
+        this.text0.set({
+            x: this.tilesX * this.tileSize + 3,
+            y: 5
+        });
+        this.stage.addChild(this.text0);
+
         const playerImg = new Player({
             x: this.tilesX,
-            y: 0
+            y: 1
         });
         this.stage.addChild(playerImg.bmp);
 
         this.text1 = new createjs.Text("x", "bold 17px Arial", "black");
         this.text1.set({
             x: (this.tilesX + 1) * this.tileSize + 3,
-            y: 5
+            y: this.tileSize + 5
         });
         this.stage.addChild(this.text1);
 
         this.playerWood = new Wood({
             name: "wood",
             x: this.tilesX + 2,
-            y: 0
+            y: 1
         });
         this.stage.addChild(this.playerWood.bmp);
     }
 
-    // Player wood
+    // Player wood text
     playerScore(woodNr) {
         if (this.stage.getChildByName("score")) {
             this.stage.removeChild(this.scoreP);
@@ -534,27 +576,28 @@ class GameEngine {
         this.scoreP = new createjs.Text(woodNr, "bold 17px Arial", "black").set({
             name: "score",
             x: (this.tilesX + 1) * this.tileSize + 15,
-            y: 5
+            y: this.tileSize + 5
         });
         this.stage.addChild(this.scoreP);
     }
 
-    // Player death
+    // Player death text
     removePlayerScore() {
         this.stage.removeChild(this.text1);
         this.stage.removeChild(this.scoreP);
         this.stage.removeChild(this.playerWood.bmp);
+        this.stage.removeChild(this.textKey);
 
-        this.text2 = new createjs.Text("dead", "17px Arial", "black");
+        this.text2 = new createjs.Text("dead", "bold 16px Arial", "black");
         this.text2.set({
             x: (this.tilesX + 1) * this.tileSize + 3,
-            y: 5
+            y: this.tileSize + 5
         });
         this.stage.addChild(this.text2);
     }
 
-    // Game over
-    end() {
+    // Game over text
+    endGame() {
         this.text3 = new createjs.Text("GAME OVER", "97px Arial", "red");
         this.text3.set({
             x: (this.tilesX / 2 - 8) * this.tileSize,
@@ -564,7 +607,7 @@ class GameEngine {
         document.getElementById('reset').textContent = 'Start';
     }
 
-    // Player tower key
+    // Player tower key text
     getKey() {
         this.stage.removeChild(this.text1);
         this.stage.removeChild(this.scoreP);
@@ -573,19 +616,9 @@ class GameEngine {
         this.textKey = new createjs.Text("x 1 Key", "17px Arial", "black");
         this.textKey.set({
             x: (this.tilesX + 1) * this.tileSize + 3,
-            y: 5
+            y: this.tileSize + 5
         });
         this.stage.addChild(this.textKey);
-    }
-
-    // remove wall from tiles
-    removeTile(position) {
-        for (let i = 0; i < this.tiles.length; i++) {
-            const tile = this.tiles[i];
-            if (tile.position.x == position.x && tile.position.y == position.y) {
-                this.tiles.splice(i, 1);
-            }
-        }
     }
 
     // replace wall with grass at princess tower
@@ -605,14 +638,92 @@ class GameEngine {
     }
 
     // Win the game message
-    win() {
-        this.text3 = new createjs.Text("THE PRINCESS IS FREE", "77px Arial", "blue");
+    win(player) {
+        this.text3 = new createjs.Text(`The winner is ${player}`, "bold 77px Arial", "#00FF33");
         this.text3.set({
-            x: 8 * this.tileSize,
+            x: 10 * this.tileSize,
             y: this.tilesY / 2 * this.tileSize
         });
         this.stage.addChild(this.text3);
         document.getElementById('reset').textContent = 'Start';
+        this.end = true;
+    }
+
+    // ====================== player AI ===========================
+
+    // PlayerAI wood text
+    playerScoreAI(woodNr) {
+        if (this.stage.getChildByName("scoreAI")) {
+            this.stage.removeChild(this.scorePlayerAI);
+        }
+        this.scorePlayerAI = new createjs.Text(woodNr, "bold 17px Arial", "black").set({
+            name: "scoreAI",
+            x: (this.tilesX + 1) * this.tileSize + 15,
+            y: 15 * this.tileSize + 7
+        });
+        this.stage.addChild(this.scorePlayerAI);
+    }
+
+    // Score player AI text
+    scoreAI() {
+
+        this.text10 = new createjs.Text("CPU", "bold 17px Arial", "black");
+        this.text10.set({
+            x: this.tilesX * this.tileSize + 3,
+            y: 14 * this.tileSize + 5
+        });
+        this.stage.addChild(this.text10);
+
+        const playerImg = new PlayerAI({
+            x: this.tilesX,
+            y: 15
+        });
+        this.stage.addChild(playerImg.bmp);
+
+        this.text11 = new createjs.Text("x", "bold 17px Arial", "black");
+        this.text11.set({
+            name: "txt11",
+            x: (this.tilesX + 1) * this.tileSize + 3,
+            y: 15 * this.tileSize + 7
+        });
+        this.stage.addChild(this.text11);
+
+        this.playerAIWood = new Wood({
+            name: "woodAI",
+            x: this.tilesX + 2,
+            y: 15
+        });
+        this.stage.addChild(this.playerAIWood.bmp);
+    }
+
+    // Player AI tower key text
+    getKeyAI() {
+        this.stage.removeChild(this.text11);
+        this.stage.removeChild(this.scorePlayerAI);
+        this.stage.removeChild(this.playerAIWood.bmp);
+
+        this.textKeyAI = new createjs.Text("x 1 Key", "bold 17px Arial", "black");
+        this.textKeyAI.set({
+            name: "KeyAI",
+            x: (this.tilesX + 1) * this.tileSize + 3,
+            y: 15 * this.tileSize
+        });
+        this.stage.addChild(this.textKeyAI);
+    }
+
+    // Player AI death text
+    removePlayerAIScore() {
+        this.stage.removeChild(this.text11);
+        this.stage.removeChild(this.scorePlayerAI);
+        this.stage.removeChild(this.playerAIWood.bmp);
+        this.stage.removeChild(this.textKeyAI);
+
+        this.text12 = new createjs.Text("dead", "bold 16px Arial", "black");
+        this.text12.set({
+            x: (this.tilesX + 1) * this.tileSize + 3,
+            y: 15 * this.tileSize
+        });
+        this.stage.addChild(this.text12);
     }
 }
 

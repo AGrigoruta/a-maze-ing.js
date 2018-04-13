@@ -256,7 +256,7 @@ export default class Player {
 
     detectWin() {
         if (this.position.x === gGameEngine.tilesX - 1 && this.position.y === 10) {
-            gGameEngine.win();
+            gGameEngine.win('Player');
         }
     }
 
