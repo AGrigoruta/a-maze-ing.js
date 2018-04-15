@@ -54,6 +54,7 @@ export default class PlayerAI {
         this.foundEnd = false;
         this.towerMove = ['idle', 'right', 'right'];
         this.count = 0;
+        this.searchDepth = 4;
 
         gGameEngine.stage.addChild(this.bmp);
     }
@@ -68,8 +69,8 @@ export default class PlayerAI {
 
     moveAI() {
         if (this.isStrictPosition()) {
-            this.direction = this.nextMoveAI(this.position);
             this.pickWood(this.position);
+            this.direction = this.nextMoveAI(this.position);
             if (this.open) {
                 if (this.detectEndPosition()) {
                     this.direction = 'right';
@@ -157,7 +158,7 @@ export default class PlayerAI {
         for (let j = 0; j < gGameEngine.enemies.length; j++) {
             const enemy = gGameEngine.enemies[j];
             // if enemy in vecinity(distance < X) block position (false)  
-            if (Math.sqrt(Math.pow(Math.abs(enemy.position.x - this.position.x), 2) + Math.pow(Math.abs(enemy.position.y - this.position.y), 2)) < 3) {
+            if (Math.sqrt(Math.pow(Math.abs(enemy.position.x - this.position.x), 2) + Math.pow(Math.abs(enemy.position.y - this.position.y), 2)) < this.searchDepth) {
                 this.maze[enemy.position.y][enemy.position.x] = false;
             }
         }
