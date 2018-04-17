@@ -168,13 +168,13 @@ export default class PlayerAI {
     nextMoveAI(pos) {
         let result;
         this.copyMaze();
-        do {
-            // detect enemy danger
-            const danger = this.detectEnemyDanger(this.position);
-            if (danger) {
-                return danger;
-            }
+        // detect enemy danger
+        const danger = this.detectEnemyDanger(this.position);
+        if (danger) {
+            return danger;
+        }
 
+        do {
             this.foundWood = false;
             this.foundEnd = false;
             if (this.open) {
@@ -483,7 +483,7 @@ export default class PlayerAI {
                 move.push(option);
             }
         }
-        return (move.length) ? move[Math.floor(Math.random() * move.length)] : '';           
+        return (move.length) ? move[Math.floor(Math.random() * move.length)] : '';
     }
 
     //get new position
