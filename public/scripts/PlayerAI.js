@@ -382,8 +382,9 @@ export default class PlayerAI {
                     this.maze[this.savePath[1][1].y][this.savePath[1][1].x] = false;
                     return true;
                 }
-            } else return false;
+            }
         }
+        return false;
     }
 
     // detect if wood is in the vicinity for search path
