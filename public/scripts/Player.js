@@ -10,6 +10,8 @@ export default class Player {
             w: 48,
             h: 48
         };
+        this.wood = 0;
+        this.health = 100;
         this.alive = true;
         this.controls = {
             'up': 'up',
@@ -100,6 +102,8 @@ export default class Player {
                 this.updatePosition();
             }
         }
+
+        // Detect collisions with other stuff
     }
 
     
@@ -177,6 +181,25 @@ export default class Player {
         return false;
     }
 
+    didWin(position, woodCount) {
+        // Will he ever win?
+    }
+
+    detectEnemyCollision() {
+        // Nowhere to run now
+    }
+
+    handleWoodCollision() {
+        // Build that ladder, lazy George
+    }
+
+    die() {
+        // I think I can see the light
+    }
+
+    fade() {
+        // Metallica - Fade to Black
+    }
     
     // Changes animation if requested animation is not already current
     animate(animation) {

@@ -19,6 +19,8 @@ class GameEngine {
             w: this.tileSize * (this.tilesX + 4),
             h: this.tileSize * this.tilesY
         };
+        this.playersCount = 1;
+        this.woodDistributionRatio = 12;
 
         // Asset Objects
         this.playerBoyImg = null;
@@ -34,6 +36,12 @@ class GameEngine {
         this.tiles = [];
         this.grassTiles = [];
         this.towerEdgeTiles = [];
+
+        // Sound Manipulation Parameters
+        this.playing = false;
+        this.soundtrackLoaded = false;
+        this.soundtrackPlaying = false;
+        this.soundtrack = null;
 
     }
 
@@ -61,6 +69,9 @@ class GameEngine {
             { id: 'tile_grass', src: 'img/tile_grass.png' },
             { id: 'tile_wall', src: 'img/tile_wall.png' }
         ]);
+
+        createjs.Sound.addEventListener('fileload', this.onSoundLoaded);
+        createjs.Sound.registerSound('sounds/game.mp3', 'game');
     }
 
     setup() {
@@ -92,6 +103,11 @@ class GameEngine {
         // Lock the princess in the tower >:(
         new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
 
+        // Toggle sound
+        // TO DO
+
+        // DJ, turn it up
+
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
@@ -114,6 +130,18 @@ class GameEngine {
 
         // Stage
         gGameEngine.stage.update();
+    }
+
+    onSoundLoaded(sound) {
+        // Gotta check this mixtape
+    }
+
+    playSoundtrack() {
+        // No really, listen to it
+    }
+
+    toggleSound() {
+        // Oh? You don't like it?
     }
 
     generateMaze(x, y) {
@@ -258,6 +286,7 @@ class GameEngine {
 
     drawWoods() {
         const available = [];
+        const added = [];
 
         for (let i = 0; i < this.grassTiles.length; i++) {
             available.push(this.grassTiles[i]);
@@ -272,6 +301,8 @@ class GameEngine {
             const wood = new Wood(tile.position);
             this.woods.push(wood);
         }
+
+        // Distribute bonuses to quarters of map more or less fair
     }
 
     spawnPlayers() {
@@ -311,7 +342,7 @@ class GameEngine {
             return 0.5 - Math.random();
         });
 
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 5; i++) {
             const startingPosition = this.grassTiles[availablePathwayStart[i]].position;
             const enemy = new Enemy(startingPosition);
             this.enemies.push(enemy);
@@ -344,6 +375,14 @@ class GameEngine {
     getTileMaterial(position) {
         const tile = this.getTile(position);
         return tile ? tile.material : 'grass';
+    }
+
+    gameOver(status) {
+        // Please insert 25 cents to try again
+    }
+
+    countPlayersAlive() {
+        // I can count them on the fingers!
     }
 }
 
