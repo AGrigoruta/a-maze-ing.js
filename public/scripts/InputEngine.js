@@ -17,6 +17,7 @@ class InputEngine {
         this.bind(37, 'left');
         this.bind(40, 'down');
         this.bind(39, 'right');
+        this.bind(77, 'mute');
     
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);
