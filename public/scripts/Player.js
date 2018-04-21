@@ -103,7 +103,18 @@ export default class Player {
             }
         }
 
-        // Detect collisions with other stuff
+        if (this.detectEnemyCollision()) {
+            this.health -= 5;
+        }
+        if (this.health === 0) {
+            this.die();
+        }
+        if (this.wood < 5) {
+            this.handleWoodCollision();
+        }
+        if (this.didWin(position, this.wood)) {
+            gGameEngine.gameOver('win');
+        }
     }
 
     
@@ -182,23 +193,79 @@ export default class Player {
     }
 
     didWin(position, woodCount) {
-        // Will he ever win?
+        const player = {};
+        player.left = position.x;
+        player.top = position.y;
+        player.right = player.left + this.size.w;
+        player.bottom = player.top + this.size.h;
+
+        // Check possible collision with all wall and wood tiles
+        const tiles = gGameEngine.towerEdgeTiles;
+        for (let i = 0; i < tiles.length; i++) {
+            const tilePosition = tiles[i].position;
+
+            const tile = {};
+            tile.left = tilePosition.x * gGameEngine.tileSize + 25;
+            tile.top = tilePosition.y * gGameEngine.tileSize + 20;
+            tile.right = tile.left + gGameEngine.tileSize - 30;
+            tile.bottom = tile.top + gGameEngine.tileSize - 30;
+
+            if (gGameEngine.intersectRect(player, tile) && woodCount === 5) {
+                return true;
+            }
+        }
+        return false;
     }
 
     detectEnemyCollision() {
-        // Nowhere to run now
+        const enemies = gGameEngine.enemies;
+        for (let i = 0; i < enemies.length; i++) {
+            const enemy = enemies[i];
+            const collision = enemy.position.x === this.position.x && enemy.position.y === this.position.y;
+            if (collision) {
+                return true;
+            }
+        }
+        return false;
     }
 
     handleWoodCollision() {
-        // Build that ladder, lazy George
+        const woodPieces = gGameEngine.woods;
+        for (let i = 0; i < woodPieces.length; i++) {
+            const wood = woodPieces[i];
+            if (Utils.comparePositions(wood.position, this.position)) {
+                this.wood++;
+                wood.destroy();
+            }
+        }
     }
 
     die() {
-        // I think I can see the light
+        this.alive = false;
+
+        if (gGameEngine.countPlayersAlive() === 0) {
+            gGameEngine.gameOver('lose');
+        }
+
+        this.bmp.gotoAndPlay('dead');
+        this.fade();
     }
 
     fade() {
-        // Metallica - Fade to Black
+        let timer = 0;
+        const bmp = this.bmp;
+        setInterval
+        const fade = setInterval(() => {
+            timer++;
+
+            if(timer > 30) {
+                bmp.alpha -= 0.05;
+            }
+
+            if(bmp.alpha <= 0) {
+                clearInterval(fade);
+            }
+        }, 30);
     }
     
     // Changes animation if requested animation is not already current

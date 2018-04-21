@@ -4,6 +4,7 @@ module.exports = {
     "globals": {
         "window": true,
         "document": true,
-        "createjs": true
+        "createjs": true,
+        "console": true
     }
 };

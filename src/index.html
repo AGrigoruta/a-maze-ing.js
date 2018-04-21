@@ -16,7 +16,13 @@
 </head>
 
 <body onload="init();">
-    <canvas id="game" width="1408" height="672"></canvas>
+    <div id="game__container">
+        <canvas id="game" width="1408" height="672"></canvas>
+        <section class="game__hud">
+            <div class="game__health">Health: <span id="lifeCount">100</span> </div>
+            <div class="game__wood">Wood collected: <span id="woodCount">0</span> / 5</div>
+        </section>
+    </div>
 </body>
 
 </html>
