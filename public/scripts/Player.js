@@ -105,12 +105,14 @@ export default class Player {
 
         if (this.detectEnemyCollision()) {
             this.health -= 5;
+            document.getElementById('lifeCount').innerHTML = this.health;
         }
         if (this.health === 0) {
             this.die();
         }
         if (this.wood < 5) {
             this.handleWoodCollision();
+            document.getElementById('woodCount').innerHTML = this.wood;
         }
         if (this.didWin(position, this.wood)) {
             gGameEngine.gameOver('win');
@@ -254,7 +256,6 @@ export default class Player {
     fade() {
         let timer = 0;
         const bmp = this.bmp;
-        setInterval
         const fade = setInterval(() => {
             timer++;
 

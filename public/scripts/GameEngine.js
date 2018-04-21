@@ -104,9 +104,14 @@ class GameEngine {
         new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
 
         // Toggle sound
-        // TO DO
+        gInputEngine.addListener('mute', this.toggleSound);
 
         // DJ, turn it up
+        if (gGameEngine.playersCount > 0) {
+            if (this.soundtrackLoaded) {
+                this.playSoundtrack();
+            }
+        }
 
         // Start loop
         if (!createjs.Ticker.hasEventListener('tick')) {
@@ -133,15 +138,28 @@ class GameEngine {
     }
 
     onSoundLoaded(sound) {
-        // Gotta check this mixtape
+        if (sound.id === 'game') {
+            gGameEngine.soundtrackLoaded = true;
+            if (gGameEngine.playersCount > 0) {
+                gGameEngine.playSoundtrack();
+            }
+        }
     }
 
     playSoundtrack() {
-        // No really, listen to it
+        if (!gGameEngine.soundtrackPlaying) {
+            gGameEngine.soundtrack = createjs.Sound.play('game', 'none', 0, 0, -1);
+            gGameEngine.soundtrack.setVolume(1);
+            gGameEngine.soundtrackPlaying = true;
+        }
     }
 
     toggleSound() {
-        // Oh? You don't like it?
+        if (!gGameEngine.soundtrack.paused) {
+            gGameEngine.soundtrack.paused = true;
+        } else {
+            gGameEngine.soundtrack.paused = false;
+        }
     }
 
     generateMaze(x, y) {
@@ -296,10 +314,44 @@ class GameEngine {
             return 0.5 - Math.random();
         });
 
-        for(let i = 0; i < 5; i ++) {
-            const tile = available[i];
-            const wood = new Wood(tile.position);
-            this.woods.push(wood);
+        for (let i = 0; i < 4; i++) {
+            let placedCount = 0;
+            for (let j = 0; j < available.length; j++) {
+                if ((i < 2) && (placedCount > this.woodDistributionRatio / 4) ||
+                    ((i >= 2) && (placedCount > this.woodDistributionRatio / 4 - 1))) {
+                        break;
+                    }
+                const tile = available[j];
+                let badTile = false;
+                for (let addedTile of added) {
+                    if (Math.abs(addedTile.position.x - tile.position.x) < 5 &&
+                        Math.abs(addedTile.position.y - tile.position.y) < 5) {
+                            badTile = true;
+                            break;
+                    }
+                }
+
+                if (!badTile && (
+                    (i === 0 &&
+                        tile.position.x < this.tilesX / 2 &&
+                        tile.position.y < this.tilesY / 2) ||
+                    (i === 1 &&
+                        tile.position.x < this.tilesX / 2 &&
+                        tile.position.y > this.tilesY / 2) ||
+                    (i === 2 &&
+                        tile.position.x > this.tilesX / 2 &&
+                        tile.position.y < this.tilesY / 2) ||
+                    (i === 3 &&
+                        tile.position.x > this.tilesX / 2 &&
+                        tile.position.y > this.tilesY / 2)    
+                )) {
+                    const wood = new Wood(tile.position);
+                    this.woods.push(wood);
+                    added.push(tile);
+                    placedCount++;
+                }
+            }
+
         }
 
         // Distribute bonuses to quarters of map more or less fair
