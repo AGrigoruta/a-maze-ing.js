@@ -378,11 +378,21 @@ class GameEngine {
     }
 
     gameOver(status) {
-        // Please insert 25 cents to try again
+        if (status === 'win') {
+            console.log('You won!');
+        } else {
+            console.log('You died!');
+        }
     }
 
     countPlayersAlive() {
-        // I can count them on the fingers!
+        let playersAlive = 0;
+        for (let i = 0; i < gGameEngine.players.length; i++) {
+            if (gGameEngine.players[i].alive) {
+                playersAlive++;
+            }
+        }
+        return playersAlive;
     }
 }
 
