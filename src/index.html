@@ -17,10 +17,66 @@
 
 <body onload="init();">
     <div id="game__container">
+        <div class="game__gui">
+            <div class="card">
+                <div class="card_header">
+                    <p>Join a room</p>
+                </div>
+                <div class="card_content">
+                    <div class="card_item">
+                        <p class="name">Room1</p>
+                        <button>Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card_header">
+                    <p>Create room</p>
+                </div>
+                <div class="card_content">
+                    <form>
+                        <label for="roomName">Give it a name</label>
+                        <input type="text" name="roomName">
+                        <hr>
+                        <label for="roomPNumber">Give it a number</label>
+                        <select name="roomPNumber" id="roomPNumber">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                        <hr>
+                        <div>
+                            <label for="aicheck">AI</label>
+                            <input type="checkbox" name="aicheck">
+                        </div>      
+                        <hr>
+                        <button>Create!</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card_header">
+                    <p>Current room</p>
+                </div>
+                <div class="card__content">
+                    
+                </div>
+            </div>
+        </div>
         <canvas id="game" width="1408" height="672"></canvas>
         <section class="game__hud">
-            <div class="game__health">Health: <span id="lifeCount">100</span> </div>
-            <div class="game__wood">Wood collected: <span id="woodCount">0</span> / 5</div>
+            <div class="game__health">
+                <p>Health</p>
+                <div class="health__cont">
+                    <div id="health__current"></div>
+                </div>
+            </div>
+            <div class="player__name">
+                <p id="pname">dummy</p>
+                <input id="pnameInp" type="text" placeholder="Nickname">
+                <button id="pnameBtn" onclick="changeName()">Change</button>
+            </div>
+            <div class="game__wood"><span id="woodCount">0</span> / 5 <span><img src="img/wood.png"></span></div>
         </section>
     </div>
 </body>

@@ -21,6 +21,7 @@ class GameEngine {
         };
         this.playersCount = 1;
         this.woodDistributionRatio = 12;
+        this.over=false;
 
         // Asset Objects
         this.playerBoyImg = null;
@@ -360,6 +361,7 @@ class GameEngine {
     spawnPlayers() {
         this.players= [];
 
+        // const player = new Player({x: 1, y: 1});
         const player = new Player({x: 1, y: 1});
         this.players.push(player);
     }
@@ -435,6 +437,7 @@ class GameEngine {
         } else {
             console.log('You died!');
         }
+        this.over=true;
     }
 
     countPlayersAlive() {
