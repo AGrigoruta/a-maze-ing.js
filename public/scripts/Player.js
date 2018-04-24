@@ -12,7 +12,7 @@ export default class Player {
             w: 48,
             h: 48
         };
-        this.wood = 5;
+        this.wood = 0;
         this.health = 100;
         this.alive = true;
         this.controls = {

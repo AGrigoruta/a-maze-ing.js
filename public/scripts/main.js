@@ -27,3 +27,7 @@ window.changeName=()=>{
     document.getElementById('pnameBtn').innerText='Set';
     document.getElementById('pnameBtn').onclick=setName;
 }
+
+window.newRoom=()=>{
+    console.log('new room')
+}
