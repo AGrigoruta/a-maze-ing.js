@@ -1,16 +1,18 @@
 import gGameEngine from './GameEngine.js';
 import gInputEngine from './InputEngine.js';
 import Utils from './Utils.js';
+import HUD from './HUD.js';
 export default class Player {
 
     constructor(position, controls, id) {
+        this.hud=new HUD();
         this.id = 0;
         this.velocity = 2;
         this.size = {
             w: 48,
             h: 48
         };
-        this.wood = 0;
+        this.wood = 5;
         this.health = 100;
         this.alive = true;
         this.controls = {
@@ -54,6 +56,10 @@ export default class Player {
 
     update() {
         if (!this.alive) {
+            return;
+        }
+        if(gGameEngine.over){
+            this.animate('idle');
             return;
         }
         const position = { x: this.bmp.x, y: this.bmp.y };
@@ -105,14 +111,23 @@ export default class Player {
 
         if (this.detectEnemyCollision()) {
             this.health -= 5;
+            this.hud.updateHealth(this.health);
         }
         if (this.health === 0) {
             this.die();
         }
         if (this.wood < 5) {
             this.handleWoodCollision();
+            document.getElementById('woodCount').innerHTML = this.wood;
         }
         if (this.didWin(position, this.wood)) {
+            this.bmp.x+=60;
+            if(this.position.y>=12){
+                this.bmp.y=350;
+            }
+            if(this.position.y<=8){
+                this.bmp.y=300;
+            }
             gGameEngine.gameOver('win');
         }
     }
@@ -254,7 +269,6 @@ export default class Player {
     fade() {
         let timer = 0;
         const bmp = this.bmp;
-        setInterval
         const fade = setInterval(() => {
             timer++;
 
