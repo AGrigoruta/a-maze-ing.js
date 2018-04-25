@@ -142,13 +142,13 @@ socket.on('player_left',(player)=>{
 
 // end
 
-socket.on('gameWillBegin',()=>{
+socket.on('gameWillBegin',(maze)=>{
     var count=3;
     const timer=setInterval(()=>{
         count--;
         document.getElementById("status").innerHTML=`Game starts in ${count}..`
         if(count==0){
-            gGameEngine.load();
+            gGameEngine.load(roomPlayers,maze,me.id,socket);
             clearInterval(timer);
             document.getElementById("game__gui").style.opacity=0;
         }

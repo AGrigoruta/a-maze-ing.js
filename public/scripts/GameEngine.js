@@ -32,6 +32,7 @@ class GameEngine {
 
         // Environment Arrays
         this.players = [];
+        this.roomPlayers=[];
         this.enemies = [];        
         this.woods = [];
         this.tiles = [];
@@ -46,7 +47,7 @@ class GameEngine {
 
     }
 
-    load() {
+    load(roomPlayers,server_maze,id,socket) {
         // Init canvas
         this.stage = new createjs.Stage("game");
 
@@ -60,7 +61,7 @@ class GameEngine {
             that.woodImg = queue.getResult('wood');
             that.tilesImgs.grass = queue.getResult('tile_grass');
             that.tilesImgs.wall = queue.getResult('tile_wall');
-            that.setup();
+            that.setup(roomPlayers,server_maze,id,socket);
         });
         queue.loadManifest([
             { id: 'player', src: 'img/george.png' },
@@ -75,7 +76,7 @@ class GameEngine {
         createjs.Sound.registerSound('sounds/game.mp3', 'game');
     }
 
-    setup() {
+    setup(roomPlayers,server_maze,id,socket) {
         // Init input engine
         if (!gInputEngine.bindings.length) {
             gInputEngine.setup();
@@ -90,13 +91,13 @@ class GameEngine {
         this.towerEdgeTiles = [];
 
         // Draw tiles
-        this.drawTiles();
+        this.drawTiles(server_maze);
 
         // Add wood logs on the map
         this.drawWoods();
 
         // Spawn yourself
-        this.spawnPlayers();
+        this.spawnPlayers(roomPlayers,id,socket);
 
         //Release the kraken!
         this.spawnEnemies();
@@ -162,66 +163,9 @@ class GameEngine {
             gGameEngine.soundtrack.paused = false;
         }
     }
-
-    generateMaze(x, y) {
-        // Init
-        const totalCells = x * y;
-        const cells = new Array();
-        const unvisited = new Array();
-        for (let i = 0; i < y; i++) {
-            cells[i] = new Array();
-            unvisited[i] = new Array();
-            for (let j = 0; j < x; j++) {
-                cells[i][j] = [0,0,0,0];
-                unvisited[i][j] = true;
-            }
-        }
-
-        let currentCell = [Math.floor(Math.random() * y), Math.floor(Math.random() * x)]
-        const path = [currentCell];
-        unvisited[currentCell[0]][currentCell[1]] = false;
-        let visited = 1;
-
-        while(visited < totalCells) {
-            const pot = [
-                [currentCell[0] - 1, currentCell[1], 0, 2],
-                [currentCell[0], currentCell[1] + 1, 1, 3],
-                [currentCell[0] + 1, currentCell[1], 2, 0],
-                [currentCell[0], currentCell[1] - 1, 3, 1]
-            ]
-            const neighbours = new Array();
-
-            for (let k = 0; k < 4; k++) {
-                if(
-                    pot[k][0] > -1 &&
-                    pot[k][0] < y &&
-                    pot[k][1] > -1 &&
-                    pot[k][1] < x &&
-                    unvisited[pot[k][0]][pot[k][1]]
-                ) {
-                    neighbours.push(pot[k])
-                }
-            }
-
-            if (neighbours.length) {
-                const next = neighbours[Math.floor(Math.random() * neighbours.length)];
-
-                cells[currentCell[0]][currentCell[1]][next[2]] = 1;
-                cells[next[0]][next[1]][next[3]] = 1;
-
-                unvisited[next[0]][next[1]] = false;
-                visited++;
-                currentCell = [next[0], next[1]];
-                path.push(currentCell);
-            } else {
-                currentCell = path.pop();
-            }
-        }
-        return cells;
-    }
     
-    drawTiles() {
-        const maze = this.generateMaze(20,10);
+    drawTiles(server_maze) {
+        const maze = server_maze;
         for (let i = 0; i < this.tilesY; i++) {
             for (let j = 0; j < this.tilesX; j++) {
                 if (
@@ -358,12 +302,19 @@ class GameEngine {
         // Distribute bonuses to quarters of map more or less fair
     }
 
-    spawnPlayers() {
+    spawnPlayers(roomPlayers,id,socket) {
         this.players= [];
-
+        var count=0;
         // const player = new Player({x: 1, y: 1});
-        const player = new Player({x: 1, y: 1});
-        this.players.push(player);
+        roomPlayers.forEach(player => {
+            var p;
+            if(player.id==id){
+                p=new Player({x: 1+count++, y: 1+count++},true,player.id,socket);
+            }else{
+                p=new Player({x: 1+count++, y: 1+count++},false,player.id,socket);
+            }
+            this.players.push(p);
+        });
     }
 
     spawnEnemies() {

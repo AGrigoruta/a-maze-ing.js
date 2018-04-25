@@ -4,8 +4,9 @@ import Utils from './Utils.js';
 import HUD from './HUD.js';
 export default class Player {
 
-    constructor(position, controls, id) {
+    constructor(position, controls, id,socket) {
         this.hud=new HUD();
+        this.socket=socket;
         this.id = 0;
         this.velocity = 2;
         this.size = {
@@ -16,17 +17,63 @@ export default class Player {
         this.health = 100;
         this.alive = true;
         this.controls = {
-            'up': 'up',
-            'left': 'left',
-            'down': 'down',
-            'right': 'right'
+            up: 'up',
+            left: 'left',
+            down: 'down',
+            right: 'right'
         };
+        this.socket_controls = {
+            up:false,
+            left:false,
+            down:false,
+            right:false
+        }
         if (id) {
             this.id = id;
         }
 
-        if (controls) {
+        if (!controls) {
             this.controls = controls;
+            socket.on('up',(source)=>{
+                if(source==id){
+                    this.socket_controls.up=true;
+                    this.socket_controls.left=false;
+                    this.socket_controls.down=false;
+                    this.socket_controls.right=false;
+                }
+            });
+            socket.on('left',(source)=>{
+                if(source==id){
+                    this.socket_controls.left=true;
+                    this.socket_controls.down=false;
+                    this.socket_controls.right=false;
+                    this.socket_controls.up=false;
+                }
+            });
+            socket.on('down',(source)=>{
+                if(source==id){
+                    this.socket_controls.down=true;
+                    this.socket_controls.right=false;
+                    this.socket_controls.up=false;
+                    this.socket_controls.left=false;
+                }
+            });
+            socket.on('right',(source)=>{
+                if(source==id){
+                    this.socket_controls.right=true;
+                    this.socket_controls.up=false;
+                    this.socket_controls.left=false;
+                    this.socket_controls.down=false;
+                }
+            });
+            socket.on('idle',(source)=>{
+                if(source==id){
+                    this.socket_controls.right=false;
+                    this.socket_controls.up=false;
+                    this.socket_controls.left=false;
+                    this.socket_controls.down=false;
+                }
+            });
         }
 
         const img = gGameEngine.playerBoyImg;
@@ -66,24 +113,39 @@ export default class Player {
 
         let dirX = 0;
         let dirY = 0;
-        if (gInputEngine.actions[this.controls.up]) {
+        if (gInputEngine.actions[this.controls.up] || this.socket_controls.up) {
             this.animate('up');
             position.y -= this.velocity;
             dirY = -1;
-        } else if (gInputEngine.actions[this.controls.down]) {
+            if(this.controls){
+                this.socket.emit('up',true);
+            }
+        } else if (gInputEngine.actions[this.controls.down] || this.socket_controls.down) {
             this.animate('down');
             position.y += this.velocity;
             dirY = 1;
-        } else if (gInputEngine.actions[this.controls.left]) {
+            if(this.controls){
+                this.socket.emit('down',true);
+            }
+        } else if (gInputEngine.actions[this.controls.left] || this.socket_controls.left) {
             this.animate('left');
             position.x -= this.velocity;
             dirX = -1;
-        } else if (gInputEngine.actions[this.controls.right]) {
+            if(this.controls){
+                this.socket.emit('left',true);
+            }
+        } else if (gInputEngine.actions[this.controls.right] || this.socket_controls.right) {
             this.animate('right');
             position.x += this.velocity;
             dirX = 1;
+            if(this.controls){
+                this.socket.emit('right',true);
+            }
         } else {
             this.animate('idle');
+            if(this.controls){
+                this.socket.emit('idle',true);
+            }
         }
 
         if (position.x != this.bmp.x || position.y != this.bmp.y) {
@@ -111,14 +173,18 @@ export default class Player {
 
         if (this.detectEnemyCollision()) {
             this.health -= 5;
-            this.hud.updateHealth(this.health);
+            if(this.controls){
+                this.hud.updateHealth(this.health);
+            }
         }
         if (this.health === 0) {
             this.die();
         }
         if (this.wood < 5) {
             this.handleWoodCollision();
-            document.getElementById('woodCount').innerHTML = this.wood;
+            if(this.controls){
+                document.getElementById('woodCount').innerHTML = this.wood;
+            }
         }
         if (this.didWin(position, this.wood)) {
             this.bmp.x+=60;
