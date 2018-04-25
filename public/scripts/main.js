@@ -8,9 +8,9 @@ var socket=io.connect();
 var client_rooms=[];
 var curRoom;
 var roomPlayers=[];
-window.init = () => {
-    gGameEngine.load();
-}
+// window.init = () => {
+//     gGameEngine.load();
+// }
 
 if('serviceWorker' in navigator ){
     // navigator.serviceWorker.register('./service-worker.js');
@@ -44,6 +44,7 @@ document.getElementById("submit").onclick=()=>{
     socket.emit('newRoom', {room:room,name:me.name});
     curRoom=room;
     roomPlayers.push(me);
+    addPlayer(me);
     document.getElementById("join").style.width=0;
     document.getElementById("create").style.width=0;
     document.getElementById("current").style.width='400px';
@@ -66,6 +67,11 @@ window.leaveRoom=()=>{
     document.getElementById("current").style.width=0;
     document.getElementById("pnameBtn").style.display='block';
     curRoom=null;
+    while (document.getElementById("playerDispCont").lastChild) {
+        if(document.getElementById("playerDispCont").lastChild.id=='playerTempl')
+            break;
+        document.getElementById("playerDispCont").removeChild(document.getElementById("playerDispCont").lastChild);
+    }
 }
 
 
@@ -79,6 +85,17 @@ var addRoom=(room)=>{
     }
     document.getElementById("roomDispCont").appendChild(template);
 }
+
+var addPlayer=(player)=>{
+    var template = document.getElementById("playerTempl").cloneNode(true);
+    template.id=player.id;
+    template.classList.remove("template");
+    template.firstElementChild.innerHTML=player.name;
+    document.getElementById("playerDispCont").appendChild(template);
+}
+
+
+
 
 socket.on('connect',(id)=>{
     
@@ -102,14 +119,38 @@ socket.on('newRoom',(room)=>{
 });
 
 socket.on('deleteRoom',(room)=>{
-    var index=client_rooms.findIndex(x => x.name==room.name);
-    client_rooms.splice(index,1);
+    client_rooms.splice(client_rooms.indexOf(room),1);
     document.getElementById(room.name).remove();
 });
 
-// end
-
 socket.on('player_conn',(player)=>{
     roomPlayers.push(player);
-    console.log(roomPlayers)
+    addPlayer(player);
+})
+
+socket.on('getPlayers',(players)=>{
+    roomPlayers=players;
+    roomPlayers.forEach(player => {
+        addPlayer(player);
+    });
+})
+
+socket.on('player_left',(player)=>{
+    roomPlayers.splice(roomPlayers.indexOf(player),1);
+    document.getElementById(player.id).remove();
+})
+
+// end
+
+socket.on('gameWillBegin',()=>{
+    var count=3;
+    const timer=setInterval(()=>{
+        count--;
+        document.getElementById("status").innerHTML=`Game starts in ${count}..`
+        if(count==0){
+            gGameEngine.load();
+            clearInterval(timer);
+            document.getElementById("game__gui").style.opacity=0;
+        }
+    },1000)
 })

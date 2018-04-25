@@ -16,9 +16,9 @@
 
 </head>
 
-<body onload="init();">
+<body>
     <div id="game__container">
-        <div class="game__gui">
+        <div class="game__gui" id="game__gui">
             <div class="card"  id="join">
                 <div class="card_header">
                     <p>Join a room</p>
@@ -38,7 +38,6 @@
                     <div >
                         <label for="roomPNumber">Give it a number</label>
                         <select name="roomPNumber" id="roomPNumber">
-                            <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
                         </select>
@@ -56,14 +55,16 @@
                 <div class="card_header">
                     <p id="current_room_name">Current room</p>
                 </div>
-                <div class="card__content" id="playerDisp">
+                <div class="card__content">
                     <p>Players</p>
-                    <div class="card_item template" id="playerTempl">
-                            <p class="name">Player1</p>
+                    <hr>
+                    <div id="playerDispCont">
+                        <div class="card_item template" id="playerTempl">
+                                <p class="name">Player1</p>
+                        </div>
                     </div>
                     <hr>
-                    <hr>
-                    <p>Waiting for players to join...</p>
+                    <p id="status">Waiting for players to join...</p>
                     <button onclick="leaveRoom()">Leave Room</button>
                 </div>
             </div>
