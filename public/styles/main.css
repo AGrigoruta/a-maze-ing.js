@@ -74,7 +74,6 @@ html, body {
     height: 30px;
     margin: 0;
     margin-bottom: 10px;
-    line-height: 60px;
     text-align: center;
 }
 
@@ -105,7 +104,9 @@ html, body {
     margin-top: 25px;
     width: 400px;
     height: 550px;
-    background: rgba(255, 255, 255,0.5);   
+    background: rgba(255, 255, 255,0.5);
+    overflow: hidden;   
+    transition: width 0.2s ease-in-out;
 }
 
 .card_header{
@@ -124,12 +125,12 @@ html, body {
     height: 450px;
 }
 
-.card_content>form{
+/* .card_content>div{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     /* text-align: center;  */
-}
+} */
 
 .card_content>form>label{
     text-align: center;
@@ -140,5 +141,15 @@ html, body {
     display: flex;
     justify-content: space-around;
     padding: 10px;
+    margin: 10px;
 }
+
+.template{
+    display: none;
+}
+
+#current{
+    width:0;
+}
+
 

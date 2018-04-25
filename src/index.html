@@ -11,6 +11,7 @@
     <script src="https://code.createjs.com/tweenjs-0.6.2.min.js"></script>
     <script src="https://code.createjs.com/soundjs-0.6.2.min.js"></script>
     <script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
     <script type="module" src="scripts/main.js"></script>
 
 </head>
@@ -18,26 +19,23 @@
 <body onload="init();">
     <div id="game__container">
         <div class="game__gui">
-            <div class="card">
+            <div class="card"  id="join">
                 <div class="card_header">
                     <p>Join a room</p>
                 </div>
-                <div class="card_content">
-                    <div class="card_item">
+                <div class="card_content" id="roomDispCont">
+                    <div class="card_item template" id="roomTempl">
                         <p class="name">Room1</p>
                         <button>Join</button>
                     </div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card" id="create">
                 <div class="card_header">
                     <p>Create room</p>
                 </div>
                 <div class="card_content">
-                    <form action="#" name="newRoom" onsubmit="newRoom()">
-                        <label for="roomName">Give it a name</label>
-                        <input type="text" name="roomName">
-                        <hr>
+                    <div >
                         <label for="roomPNumber">Give it a number</label>
                         <select name="roomPNumber" id="roomPNumber">
                             <option value="1">1</option>
@@ -47,19 +45,26 @@
                         <hr>
                         <div>
                             <label for="aicheck">AI</label>
-                            <input type="checkbox" name="aicheck">
+                            <input type="checkbox" name="aicheck" id="aicheck">
                         </div>      
                         <hr>
-                        <button type="submit">Create!</button>
-                    </form>
+                        <button id="submit">Create!</button>
+                    </div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card" id="current">
                 <div class="card_header">
-                    <p>Current room</p>
+                    <p id="current_room_name">Current room</p>
                 </div>
-                <div class="card__content">
-                    
+                <div class="card__content" id="playerDisp">
+                    <p>Players</p>
+                    <div class="card_item template" id="playerTempl">
+                            <p class="name">Player1</p>
+                    </div>
+                    <hr>
+                    <hr>
+                    <p>Waiting for players to join...</p>
+                    <button onclick="leaveRoom()">Leave Room</button>
                 </div>
             </div>
         </div>
