@@ -95,18 +95,15 @@ class GameEngine {
         this.grassTiles = [];
         this.towerEdgeTiles = [];
 
-        // TODO: If there's stuff from the server pass params into this functions
         // Draw tiles
-        this.drawTiles();
+        res ? this.drawTiles(res.maze) : this.drawTiles();
 
         // Add wood logs on the map
-        this.drawWoods();
-
+        res ? this.drawWoods(res.woods) : this.drawWoods();
         // Spawn yourself
-        this.spawnPlayers();
+        res ? this.spawnEnemies(res.enemies) : this.spawnEnemies();
 
-        //Release the kraken!
-        this.spawnEnemies();
+        this.spawnPlayers();
 
         // Lock the princess in the tower >:(
         new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
@@ -238,9 +235,8 @@ class GameEngine {
         return cells;
     }
     
-    drawTiles() {
-        //TODO: pass the maze as param
-        const maze = this.generateMaze(20,10);
+    drawTiles(mazeCells = null) {
+        const maze = mazeCells || this.generateMaze(20,10);
         for (let i = 0; i < this.tilesY; i++) {
             for (let j = 0; j < this.tilesX; j++) {
                 if (
@@ -322,57 +318,65 @@ class GameEngine {
         }
     }
 
-    drawWoods() {
-        const available = [];
-        const added = [];
-
-        for (let i = 0; i < this.grassTiles.length; i++) {
-            available.push(this.grassTiles[i]);
-        }
-
-        available.sort(() => {
-            return 0.5 - Math.random();
-        });
-
-        for (let i = 0; i < 4; i++) {
-            let placedCount = 0;
-            for (let j = 0; j < available.length; j++) {
-                if ((i < 2) && (placedCount > this.woodDistributionRatio / 4) ||
-                    ((i >= 2) && (placedCount > this.woodDistributionRatio / 4 - 1))) {
-                        break;
-                    }
-                const tile = available[j];
-                let badTile = false;
-                for (let addedTile of added) {
-                    if (Math.abs(addedTile.position.x - tile.position.x) < 5 &&
-                        Math.abs(addedTile.position.y - tile.position.y) < 5) {
-                            badTile = true;
-                            break;
-                    }
-                }
-
-                if (!badTile && (
-                    (i === 0 &&
-                        tile.position.x < this.tilesX / 2 &&
-                        tile.position.y < this.tilesY / 2) ||
-                    (i === 1 &&
-                        tile.position.x < this.tilesX / 2 &&
-                        tile.position.y > this.tilesY / 2) ||
-                    (i === 2 &&
-                        tile.position.x > this.tilesX / 2 &&
-                        tile.position.y < this.tilesY / 2) ||
-                    (i === 3 &&
-                        tile.position.x > this.tilesX / 2 &&
-                        tile.position.y > this.tilesY / 2)    
-                )) {
-                    const wood = new Wood(tile.position);
-                    this.woods.push(wood);
-                    added.push(tile);
-                    placedCount++;
-                }
+    drawWoods(io_woods) {
+        if(io_woods) {
+            for (let i = 0; i < io_woods.length; i++) {
+                const wood = new Wood({x: io_woods[i].x, y: io_woods[i].y});
+                this.woods.push(wood);
+            }  
+        } else {
+            const available = [];
+            const added = [];
+    
+            for (let i = 0; i < this.grassTiles.length; i++) {
+                available.push(this.grassTiles[i]);
             }
-
+    
+            available.sort(() => {
+                return 0.5 - Math.random();
+            });
+    
+            for (let i = 0; i < 4; i++) {
+                let placedCount = 0;
+                for (let j = 0; j < available.length; j++) {
+                    if ((i < 2) && (placedCount > this.woodDistributionRatio / 4) ||
+                        ((i >= 2) && (placedCount > this.woodDistributionRatio / 4 - 1))) {
+                            break;
+                        }
+                    const tile = available[j];
+                    let badTile = false;
+                    for (let addedTile of added) {
+                        if (Math.abs(addedTile.position.x - tile.position.x) < 5 &&
+                            Math.abs(addedTile.position.y - tile.position.y) < 5) {
+                                badTile = true;
+                                break;
+                        }
+                    }
+    
+                    if (!badTile && (
+                        (i === 0 &&
+                            tile.position.x < this.tilesX / 2 &&
+                            tile.position.y < this.tilesY / 2) ||
+                        (i === 1 &&
+                            tile.position.x < this.tilesX / 2 &&
+                            tile.position.y > this.tilesY / 2) ||
+                        (i === 2 &&
+                            tile.position.x > this.tilesX / 2 &&
+                            tile.position.y < this.tilesY / 2) ||
+                        (i === 3 &&
+                            tile.position.x > this.tilesX / 2 &&
+                            tile.position.y > this.tilesY / 2)    
+                    )) {
+                        const wood = new Wood(tile.position);
+                        this.woods.push(wood);
+                        added.push(tile);
+                        placedCount++;
+                    }
+                }
+    
+            }
         }
+       
 
         // Distribute bonuses to quarters of map more or less fair
     }
@@ -392,7 +396,7 @@ class GameEngine {
             };
 
             var player2 = new Player(
-                { x: gGameEngine.tilesX - 2, y: gGameEngine.tilesY - 2 },
+                { x: 1, y: gGameEngine.tilesY - 2 },
                 controls,
                 1
             );
@@ -401,41 +405,50 @@ class GameEngine {
         }
     }
 
-    spawnEnemies() {
+    spawnEnemies(io_enemies) {
         this.enemies = [];
-        const availablePathwayStart = [];
 
-        this.grassTiles.sort((a, b) => {
-            if (a.position.y === b.position.y) return a.position.x - b.position.x
-            return a.position.y - b.position.y
-        });
+        if(io_enemies) {
+            for (let i = 0; i < io_enemies.length; i++) {
+                const enemy = new Enemy({ x: io_enemies[i].x, y: io_enemies[i].y });
+                this.enemies.push(enemy);
+              }
+        } else {
+            const availablePathwayStart = [];
 
-        for (let i = 0; i < this.grassTiles.length - 5; i++) {
-            if (
-                (this.grassTiles[i].position.y === this.grassTiles[i+1].position.y &&
-                this.grassTiles[i].position.y === this.grassTiles[i+2].position.y &&
-                this.grassTiles[i].position.y === this.grassTiles[i+3].position.y &&
-                this.grassTiles[i].position.y === this.grassTiles[i+4].position.y) &&
-
-                (this.grassTiles[i + 4].position.x - this.grassTiles[i + 3].position.x === 1 &&
-                this.grassTiles[i + 3].position.x - this.grassTiles[i + 2].position.x === 1 &&
-                this.grassTiles[i + 2].position.x - this.grassTiles[i + 1].position.x === 1 &&
-                this.grassTiles[i + 1].position.x - this.grassTiles[i].position.x === 1)
-            ) {
-                availablePathwayStart.push(i+4);
-                i += 5;
+            this.grassTiles.sort((a, b) => {
+                if (a.position.y === b.position.y) return a.position.x - b.position.x
+                return a.position.y - b.position.y
+            });
+    
+            for (let i = 0; i < this.grassTiles.length - 5; i++) {
+                if (
+                    (this.grassTiles[i].position.y === this.grassTiles[i+1].position.y &&
+                    this.grassTiles[i].position.y === this.grassTiles[i+2].position.y &&
+                    this.grassTiles[i].position.y === this.grassTiles[i+3].position.y &&
+                    this.grassTiles[i].position.y === this.grassTiles[i+4].position.y) &&
+    
+                    (this.grassTiles[i + 4].position.x - this.grassTiles[i + 3].position.x === 1 &&
+                    this.grassTiles[i + 3].position.x - this.grassTiles[i + 2].position.x === 1 &&
+                    this.grassTiles[i + 2].position.x - this.grassTiles[i + 1].position.x === 1 &&
+                    this.grassTiles[i + 1].position.x - this.grassTiles[i].position.x === 1)
+                ) {
+                    availablePathwayStart.push(i+4);
+                    i += 5;
+                }
+            }
+    
+            availablePathwayStart.sort(() => {
+                return 0.5 - Math.random();
+            });
+    
+            for (let i = 0; i < 5; i++) {
+                const startingPosition = this.grassTiles[availablePathwayStart[i]].position;
+                const enemy = new Enemy(startingPosition);
+                this.enemies.push(enemy);
             }
         }
-
-        availablePathwayStart.sort(() => {
-            return 0.5 - Math.random();
-        });
-
-        for (let i = 0; i < 5; i++) {
-            const startingPosition = this.grassTiles[availablePathwayStart[i]].position;
-            const enemy = new Enemy(startingPosition);
-            this.enemies.push(enemy);
-        }
+       
     }
 
     

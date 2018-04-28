@@ -128,11 +128,48 @@ export default class Player {
             gGameEngine.gameOver('win');
         }
 
-        // TODO: Send current player position
+        multiplayer.sendCurrentPosition(position, direction);
     }
 
-    updateOpponent(position, direction) {
-        // Mai havem treaba 
+    updateOpponent(bmp, direction) {
+
+        if (gGameEngine.menu.visible) {
+            return;
+        }
+
+        var position = { x: bmp.x, y: bmp.y };
+
+        var dirX = 0;
+        var dirY = 0;
+
+        if (direction === 'up') {
+            this.animate('up');
+            position.y -= this.velocity;
+            dirY = -1;
+        } else if (direction === 'down') {
+            this.animate('down');
+            position.y += this.velocity;
+            dirY = 1;
+        } else if (direction === 'left') {
+            this.animate('left');
+            position.x -= this.velocity;
+            dirX = -1;
+        } else if (direction === 'right') {
+            this.animate('right');
+            position.x += this.velocity;
+            dirX = 1;
+        } else {
+            this.animate('idle');
+        }
+
+        this.bmp.x = position.x;
+        this.bmp.y = position.y;
+        this.updatePosition();
+
+        if (this.wood < 5) {
+            this.handleWoodCollision(Utils.convertToEntityPosition(position));
+        }
+
     }
 
     
@@ -272,13 +309,14 @@ export default class Player {
 
     die(server) {
         this.alive = false;
-        // TODO: send signal that player died
-        if (gGameEngine.countPlayersAlive() === 0) {
-            gGameEngine.gameOver('lose');
+        if (!server) multiplayer.playerDied();
+        if (gGameEngine.countPlayersAlive() == 0) {
+            gGameEngine.gameOver('Game Over');
         }
 
         this.bmp.gotoAndPlay('dead');
         this.fade();
+
     }
 
     fade() {

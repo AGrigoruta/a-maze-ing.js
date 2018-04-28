@@ -19,14 +19,29 @@ app.get('/', function (req, res) {
 });
 
 const GameEngine = require('./GameEngine');
+
 const gameEngine = new GameEngine();
 
-// number of tiles
+// 0 grass tile
+// 1 wall tile
+
+// If player requests a new session
+// We check if there are sessions running
+// if there are sessions running
+// and they are available (1 player present) put the player there
+// with the current generated maze
+// if there are no available sessions
+// create a new session with a new maze
+// and place the player
+
+
+
+// Socket should emit the updated players position
+// so we can keep track of the players
+// also 
 const x = 20;
 const y = 10;
 
-// Map with rooms
-const rooms = new Map();
 
 /**
  * Returns Room ID
@@ -68,8 +83,93 @@ const setRoom = room => rooms.set(room.roomId, room);
  */
 const removeRoom = ({ roomId }) => rooms.delete(roomId);
 
+// Map with rooms
+const rooms = new Map();
+const newMaze = gameEngine.getMaze(x, y);
+
 io.on('connection', socket => {
     socket.emit('connected', { connected: true });
+    // if client requests multiplayer
+    socket.on('multiplayer-requested', () => {
+        console.log('connected')
+        let roomToJoin;
+        let lastCreatedRoom
+        if (!rooms.size) {
+            setRoom(newRoom(newMaze, gameEngine.spawnEnemies(newMaze), gameEngine.spawnWoods(newMaze)));
+        }
+        lastCreatedRoom = Array.from(rooms.values()).pop();
+
+
+        // If players in the room less than 2 
+        if (lastCreatedRoom.players.length < 2) {
+            // push newly connected player
+            lastCreatedRoom.players.push(newPlayer(socket));
+            setRoom(lastCreatedRoom);
+            // assign the room we want to join
+            roomToJoin = lastCreatedRoom;
+        } else {
+            const newnewMaze = gameEngine.getMaze(x, y)
+            // assign newly generated Room
+            const newlyCreatedRoom = newRoom(
+                newnewMaze,
+                gameEngine.spawnEnemies(newnewMaze),
+                gameEngine.spawnWoods(newnewMaze)
+            );
+            // Add new room
+            setRoom(newlyCreatedRoom);
+
+            // assign the room we want to join
+            roomToJoin = newlyCreatedRoom;
+        }
+
+        socket.join(roomToJoin.roomId, () => {
+            // emit the maze from current room
+            io.to(roomToJoin.roomId).emit('joined-room',
+                { maze: roomToJoin.maze, enemies: roomToJoin.enemies, woods: roomToJoin.woods })
+            // if room to join has 2 players
+            if (rooms.get(roomToJoin.roomId).players.length < 2) {
+                io.to(roomToJoin.roomId).emit('waiting-opponent')
+            } else {
+                io.to(roomToJoin.roomId).emit('start-game')
+            }
+            socket.on('update-position', ({ bmp, direction }) => {
+                // broadcast to other players in the room
+                socket.broadcast
+                    .to(roomToJoin.roomId)
+                    .emit('opponent-position', { bmp, direction });
+
+            });
+
+            socket.on('player-died', playerId => {
+                // broadcast to other players in the room
+                socket.broadcast
+                    .to(roomToJoin.roomId)
+                    .emit('kill-player', playerId);
+            });
+
+            socket.on('player-won', () => {
+                // broadcast to other players in the room
+                socket.broadcast
+                    .to(roomToJoin.roomId)
+                    .emit('won-player');
+            });
+        });
+
+    })
+    socket.on('disconnect', () => {
+
+        rooms.forEach((room, key) => {
+            // Find player to remove in the playerSocket Array
+            const playerToRemove = room.players.find(player => player.playerSocket.id === socket.id);
+
+            if (playerToRemove) {
+                removeRoom(room)
+                io.to(room.roomId).emit('reset-game', room.id);
+                return;
+
+            }
+        })
+    });
 
 });
 

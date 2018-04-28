@@ -128,6 +128,10 @@ export default class Menu {
         this.setHandCursor(multiBg);
         multiBg.addEventListener('click', function () {
             // Quando e feito request para multiplayer
+            multiplayer.request();
+            socket.on('joined-room', res => {
+                that.setMode('multi', res);
+            })
 
         });
 
