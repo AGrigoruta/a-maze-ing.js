@@ -4,6 +4,8 @@ import Princess from './Princess.js';
 import Player from './Player.js';
 import Wood from './Wood.js';
 import Enemy from './Enemy.js';
+import Menu from './Menu.js';
+import { multiplayer } from './Multiplayer.js';
 
 class GameEngine {
     constructor() {
@@ -21,6 +23,8 @@ class GameEngine {
         };
         this.playersCount = 1;
         this.woodDistributionRatio = 12;
+        this.playerId = null;
+        this.menu = null;
 
         // Asset Objects
         this.playerBoyImg = null;
@@ -72,9 +76,12 @@ class GameEngine {
 
         createjs.Sound.addEventListener('fileload', this.onSoundLoaded);
         createjs.Sound.registerSound('sounds/game.mp3', 'game');
+
+        // Create menu
+        this.menu = new Menu();
     }
 
-    setup() {
+    setup(res) {
         // Init input engine
         if (!gInputEngine.bindings.length) {
             gInputEngine.setup();
@@ -88,6 +95,7 @@ class GameEngine {
         this.grassTiles = [];
         this.towerEdgeTiles = [];
 
+        // TODO: If there's stuff from the server pass params into this functions
         // Draw tiles
         this.drawTiles();
 
@@ -118,13 +126,21 @@ class GameEngine {
             createjs.Ticker.addEventListener('tick', gGameEngine.update);
             createjs.Ticker.setFPS(this.fps);
         }
+
+        if (!this.playing) {
+            this.menu.show();
+        }
     }
 
     update() {
         // Player
-        for (let i = 0; i < gGameEngine.players.length; i++) {
-            const player = gGameEngine.players[i];
-            player.update();
+        if (gGameEngine.playerId !== null) {
+            gGameEngine.players[gGameEngine.playerId].update();
+        } else {
+            for (let i = 0; i < gGameEngine.players.length; i++) {
+                const player = gGameEngine.players[i];
+                player.update(gGameEngine.playerId);
+            }
         }
 
         // Enemies
@@ -132,6 +148,9 @@ class GameEngine {
             const enemy = gGameEngine.enemies[i];
             enemy.update();
         }
+
+        // Menu
+        gGameEngine.menu.update();
 
         // Stage
         gGameEngine.stage.update();
@@ -220,6 +239,7 @@ class GameEngine {
     }
     
     drawTiles() {
+        //TODO: pass the maze as param
         const maze = this.generateMaze(20,10);
         for (let i = 0; i < this.tilesY; i++) {
             for (let j = 0; j < this.tilesX; j++) {
@@ -360,8 +380,25 @@ class GameEngine {
     spawnPlayers() {
         this.players= [];
 
-        const player = new Player({x: 1, y: 1});
+        const player = new Player({ x: 1, y: 1 }, null, 0);
         this.players.push(player);
+
+        if (this.playersCount >= 2) {
+            var controls = {
+                up: 'up',
+                left: 'left',
+                down: 'down',
+                right: 'right',
+            };
+
+            var player2 = new Player(
+                { x: gGameEngine.tilesX - 2, y: gGameEngine.tilesY - 2 },
+                controls,
+                1
+            );
+
+            gGameEngine.players.push(player2);
+        }
     }
 
     spawnEnemies() {
@@ -430,12 +467,48 @@ class GameEngine {
     }
 
     gameOver(status) {
-        if (status === 'win') {
-            console.log('You won!');
+        if (gGameEngine.menu.visible) {
+            return;
+        }
+
+        if (status == 'win') {
+            // If a player Won tell the other guy he Lost
+            const winText = 'You won!';
+
+
+            // add condition for setting lose status
+            this.menu.show([
+                { text: winText, color: '#669900' },
+                { text: ' ;D', color: '#99CC00' }
+            ]);
         } else {
-            console.log('You died!');
+            this.menu.show([
+                { text: 'Game Over', color: '#CC0000' },
+                { text: ' :(', color: '#FF4444' }
+            ]);
         }
     }
+
+    getWinner() {
+        for (let i = 0; i < gGameEngine.players.length; i++) {
+            const player = gGameEngine.players[i];
+            if (player.alive) {
+                return i;
+            }
+        }
+    }
+
+    restart(res) {
+        gInputEngine.removeAllListeners();
+        gGameEngine.stage.removeAllChildren();
+        gGameEngine.setup(res);
+    }
+
+    moveToFront(child) {
+        const children = gGameEngine.stage.getNumChildren();
+        gGameEngine.stage.setChildIndex(child, children - 1);
+    }
+
 
     countPlayersAlive() {
         let playersAlive = 0;

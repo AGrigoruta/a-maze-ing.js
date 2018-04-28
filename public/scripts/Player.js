@@ -1,11 +1,12 @@
 import gGameEngine from './GameEngine.js';
 import gInputEngine from './InputEngine.js';
 import Utils from './Utils.js';
+import { socket, multiplayer } from './Multiplayer.js';
 export default class Player {
 
     constructor(position, controls, id) {
         this.id = 0;
-        this.velocity = 2;
+        this.velocity = 3;
         this.size = {
             w: 48,
             h: 48
@@ -56,27 +57,36 @@ export default class Player {
         if (!this.alive) {
             return;
         }
-        const position = { x: this.bmp.x, y: this.bmp.y };
 
+        if (gGameEngine.menu.visible) {
+            return;
+        }
+        const position = { x: this.bmp.x, y: this.bmp.y };
+        let direction;
         let dirX = 0;
         let dirY = 0;
         if (gInputEngine.actions[this.controls.up]) {
+            direction = 'up';
             this.animate('up');
             position.y -= this.velocity;
             dirY = -1;
         } else if (gInputEngine.actions[this.controls.down]) {
+            direction = 'down';
             this.animate('down');
             position.y += this.velocity;
             dirY = 1;
         } else if (gInputEngine.actions[this.controls.left]) {
+            direction = 'left';
             this.animate('left');
             position.x -= this.velocity;
             dirX = -1;
         } else if (gInputEngine.actions[this.controls.right]) {
+            direction = 'right';
             this.animate('right');
             position.x += this.velocity;
             dirX = 1;
         } else {
+            direction = 'idle';
             this.animate('idle');
         }
 
@@ -117,6 +127,12 @@ export default class Player {
         if (this.didWin(position, this.wood)) {
             gGameEngine.gameOver('win');
         }
+
+        // TODO: Send current player position
+    }
+
+    updateOpponent(position, direction) {
+        // Mai havem treaba 
     }
 
     
@@ -219,10 +235,21 @@ export default class Player {
         return false;
     }
 
-    detectEnemyCollision() {
+    detectEnemyCollision(pos = null) {
+
+        const position = pos || this.position;
+        if (pos) {
+            console.log('position');
+            console.log(position);
+        }
+
         const enemies = gGameEngine.enemies;
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
+            if (pos) {
+                console.log(enemy.position);
+
+            }
             const collision = enemy.position.x === this.position.x && enemy.position.y === this.position.y;
             if (collision) {
                 return true;
@@ -231,7 +258,8 @@ export default class Player {
         return false;
     }
 
-    handleWoodCollision() {
+    handleWoodCollision(pos = null) {
+        const position = pos || this.position;
         const woodPieces = gGameEngine.woods;
         for (let i = 0; i < woodPieces.length; i++) {
             const wood = woodPieces[i];
@@ -242,9 +270,9 @@ export default class Player {
         }
     }
 
-    die() {
+    die(server) {
         this.alive = false;
-
+        // TODO: send signal that player died
         if (gGameEngine.countPlayersAlive() === 0) {
             gGameEngine.gameOver('lose');
         }
