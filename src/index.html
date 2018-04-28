@@ -37,13 +37,15 @@
                 <div class="card_content">
                     <div >
                         <label for="roomPNumber">Give it a number</label>
+                        <br>
                         <select name="roomPNumber" id="roomPNumber">
                             <option value="2">2</option>
                             <option value="3">3</option>
+                            <option value="4">4</option>
                         </select>
                         <hr>
                         <div>
-                            <label for="aicheck">AI</label>
+                            <label for="aicheck">AI</label><br>
                             <input type="checkbox" name="aicheck" id="aicheck">
                         </div>      
                         <hr>
@@ -55,7 +57,7 @@
                 <div class="card_header">
                     <p id="current_room_name">Current room</p>
                 </div>
-                <div class="card__content">
+                <div class="card_content">
                     <p>Players</p>
                     <hr>
                     <div id="playerDispCont">
@@ -69,9 +71,17 @@
                 </div>
             </div>
         </div>
+        <div class="game__gui" id="end__splash">
+            <div class="end__splash">
+                <p id="game__status">You Won!</p>
+                <p id="other__win">The winner is:</p>
+                <p id="winner">dummy</p>
+                <button id="backtolobby">Back to lobby</button>
+            </div>
+        </div>
         <canvas id="game" width="1408" height="672"></canvas>
         <section class="game__hud">
-            <div class="game__health">
+            <div id="game__health" class="game__health">
                 <p>Health</p>
                 <div class="health__cont">
                     <div id="health__current"></div>
@@ -82,7 +92,7 @@
                 <input id="pnameInp" type="text" placeholder="Nickname">
                 <button id="pnameBtn" onclick="changeName()">Change</button>
             </div>
-            <div class="game__wood"><span id="woodCount">0</span> / 5 <span><img src="img/wood.png"></span></div>
+            <div id="game__wood" class="game__wood"><span id="woodCount">0</span> / 5 <span><img src="img/wood.png"></span></div>
         </section>
     </div>
 </body>

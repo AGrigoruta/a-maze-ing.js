@@ -22,6 +22,7 @@ this._rooms=[];
 
 var generateMaze=(x, y)=>{
     // Init
+    let grassCount=0;
     const totalCells = x * y;
     const cells = new Array();
     const unvisited = new Array();
@@ -74,7 +75,16 @@ var generateMaze=(x, y)=>{
             currentCell = path.pop();
         }
     }
+    
     return cells;
+}
+
+var randomish=()=>{
+    let randomValues=[];
+    for(i=0;i<10000;i++){
+        randomValues[i]=0.5-Math.random();
+    }
+    return randomValues;
 }
 
 io.on('connection', (socket) => {
@@ -83,19 +93,22 @@ io.on('connection', (socket) => {
     var leaveRoom=(room)=>{
         
         var data=roomdata.get(socket, "players");
-        data.splice(data.findIndex(x => x.id==socket.id),1);
-        roomdata.set(socket, "players", data);
-        socket.broadcast.to(socket.curRoom.name).emit('player_left',{id:socket.id,name:socket.name});
-        roomdata.leaveRoom(socket);
-        var index=this._rooms.findIndex(x => x.name==room.name);
-        if(index>-1){
-            this._rooms[index].connPlayers--;
-            socket.curRoom=null;
-            if(this._rooms[index].connPlayers==0){
-                this._rooms.splice(index,1);
-                io.emit('deleteRoom',room);
+        if(data){
+            data.splice(data.findIndex(x => x.id==socket.id),1);
+            roomdata.set(socket, "players", data);
+            socket.broadcast.to(socket.curRoom.name).emit('player_left',{id:socket.id,name:socket.name});
+            roomdata.leaveRoom(socket);
+            var index=this._rooms.findIndex(x => x.name==room.name);
+            if(index>-1){
+                this._rooms[index].connPlayers--;
+                socket.curRoom=null;
+                if(this._rooms[index].connPlayers==0){
+                    this._rooms.splice(index,1);
+                    io.emit('deleteRoom',room);
+                }
             }
         }
+        
     }
     socket.emit('rooms',{rooms:this._rooms,id:socket.id});
     socket.on('newRoom',(obj)=>{
@@ -103,6 +116,7 @@ io.on('connection', (socket) => {
         socket.name=obj.name;
         roomdata.joinRoom(socket, room.name);
         roomdata.set(socket, "players", [{id:socket.id, name:socket.name}]);
+        roomdata.set(socket,"currOk",0);
         socket.curRoom=room;
         room.connPlayers++;
         this._rooms.push(room);
@@ -126,13 +140,24 @@ io.on('connection', (socket) => {
         if(this._rooms[index].connPlayers==this._rooms[index].players){
             this._rooms.splice(this._rooms.indexOf(room),1);
             io.emit('deleteRoom',room);
-            io.in(socket.curRoom.name).emit('gameWillBegin',generateMaze(20,10));
+            io.in(socket.curRoom.name).emit('gameWillBegin',{maze:generateMaze(20,10),randomish:randomish()});
             setTimeout(() => {
                 
             }, 3000);
         }
         socket.emit('getPlayers', roomdata.get(socket, "players"));
         socket.broadcast.to(socket.curRoom.name).emit('player_conn',{id:socket.id,name:socket.name});
+    })
+
+    socket.on('ok',()=>{
+        let currOk=roomdata.get(socket, "currOk");
+        currOk++;
+        if(currOk==(Number)(socket.curRoom.players)){
+            io.in(socket.curRoom.name).emit('releaseKrakens',"goo");
+        }else{
+            roomdata.set(socket,"currOk",currOk);
+        }
+
     })
 
     socket.on('leaveRoom',(room)=>{
@@ -157,7 +182,9 @@ io.on('connection', (socket) => {
     })
     
     socket.on('idle',()=>{
-        socket.broadcast.to(socket.curRoom.name).emit('idle',socket.id);
+        if(socket.curRoom){
+            socket.broadcast.to(socket.curRoom.name).emit('idle',socket.id);
+        }
     })
 
     socket.on('disconnect', (from) => {

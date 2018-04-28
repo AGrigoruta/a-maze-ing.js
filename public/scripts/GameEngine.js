@@ -23,6 +23,9 @@ class GameEngine {
         this.woodDistributionRatio = 12;
         this.over=false;
 
+        // player
+        this.id=null;
+
         // Asset Objects
         this.playerBoyImg = null;
         this.princessImg = null;
@@ -47,6 +50,49 @@ class GameEngine {
 
     }
 
+    reinit(){
+                // Canvas
+                this.stage = null;
+
+                // Environment Parameters
+                this.fps = 60;
+                this.tileSize = 32;
+                this.tilesX = 41;
+                this.tilesY = 21;
+                this.size = {
+                    w: this.tileSize * (this.tilesX + 4),
+                    h: this.tileSize * this.tilesY
+                };
+                this.playersCount = 1;
+                this.woodDistributionRatio = 12;
+                this.over=false;
+        
+                // player
+                this.id=null;
+        
+                // Asset Objects
+                this.playerBoyImg = null;
+                this.princessImg = null;
+                this.enemyImg = null;
+                this.woodImg = null;
+                this.tilesImgs = {};
+        
+                // Environment Arrays
+                this.players = [];
+                this.roomPlayers=[];
+                this.enemies = [];        
+                this.woods = [];
+                this.tiles = [];
+                this.grassTiles = [];
+                this.towerEdgeTiles = [];
+        
+                // Sound Manipulation Parameters
+                this.playing = false;
+                this.soundtrackLoaded = false;
+                this.soundtrackPlaying = false;
+                this.soundtrack = null;
+    }
+
     load(roomPlayers,server_maze,id,socket) {
         // Init canvas
         this.stage = new createjs.Stage("game");
@@ -55,7 +101,10 @@ class GameEngine {
         const queue = new createjs.LoadQueue();
         const that = this;
         queue.addEventListener('complete', () => {
-            that.playerBoyImg = queue.getResult('player');
+            that.player1 = queue.getResult('player1');
+            that.player2 = queue.getResult('player2');
+            that.player3 = queue.getResult('player3');
+            that.player4 = queue.getResult('player4');
             that.princessImg = queue.getResult('princess');
             that.enemyImg = queue.getResult('enemy');
             that.woodImg = queue.getResult('wood');
@@ -64,7 +113,10 @@ class GameEngine {
             that.setup(roomPlayers,server_maze,id,socket);
         });
         queue.loadManifest([
-            { id: 'player', src: 'img/george.png' },
+            { id: 'player1', src: 'img/george1.png' },
+            { id: 'player2', src: 'img/george2.png' },
+            { id: 'player3', src: 'img/george3.png' },
+            { id: 'player4', src: 'img/george4.png' },
             { id: 'princess', src: 'img/betty.png' },
             { id: 'enemy', src: 'img/dino.png' },
             { id: 'wood', src: 'img/wood.png' },
@@ -74,6 +126,7 @@ class GameEngine {
 
         createjs.Sound.addEventListener('fileload', this.onSoundLoaded);
         createjs.Sound.registerSound('sounds/game.mp3', 'game');
+        createjs.Sound.registerSound('sounds/gogo.mp3', 'lose');
     }
 
     setup(roomPlayers,server_maze,id,socket) {
@@ -94,13 +147,16 @@ class GameEngine {
         this.drawTiles(server_maze);
 
         // Add wood logs on the map
-        this.drawWoods();
+        this.drawWoods(server_maze,socket);
 
         // Spawn yourself
         this.spawnPlayers(roomPlayers,id,socket);
-
+        this.id=id;
         //Release the kraken!
-        this.spawnEnemies();
+        // not yet
+        socket.on('releaseKrakens',()=>{
+            this.spawnEnemies(server_maze);
+        })
 
         // Lock the princess in the tower >:(
         new Princess({ x: this.tilesX + 1, y: Math.floor(this.tilesY / 2) });
@@ -165,7 +221,7 @@ class GameEngine {
     }
     
     drawTiles(server_maze) {
-        const maze = server_maze;
+        const maze = server_maze.maze;
         for (let i = 0; i < this.tilesY; i++) {
             for (let j = 0; j < this.tilesX; j++) {
                 if (
@@ -247,18 +303,19 @@ class GameEngine {
         }
     }
 
-    drawWoods() {
+    drawWoods(server_maze,socket) {
         const available = [];
         const added = [];
-
+        const randomish=server_maze.randomish;
+        let i=0;
         for (let i = 0; i < this.grassTiles.length; i++) {
             available.push(this.grassTiles[i]);
         }
-
-        available.sort(() => {
-            return 0.5 - Math.random();
+        available.sort((elem) => {
+            let a=randomish[i];
+            i++;
+            return a;
         });
-
         for (let i = 0; i < 4; i++) {
             let placedCount = 0;
             for (let j = 0; j < available.length; j++) {
@@ -296,28 +353,47 @@ class GameEngine {
                     placedCount++;
                 }
             }
-
         }
-
+        socket.emit('ok',"i'm ok");
         // Distribute bonuses to quarters of map more or less fair
     }
 
     spawnPlayers(roomPlayers,id,socket) {
         this.players= [];
-        var count=0;
-        // const player = new Player({x: 1, y: 1});
+        var count=1;
         roomPlayers.forEach(player => {
             var p;
-            if(player.id==id){
-                p=new Player({x: 1+count++, y: 1+count++},true,player.id,socket);
-            }else{
-                p=new Player({x: 1+count++, y: 1+count++},false,player.id,socket);
+            switch(count){
+                case 1:{
+
+                    p=new Player({x: 1, y: 1},player.id==id,player,socket,count);
+                    break;
+                }
+                case 2:{
+
+                    p=new Player({x: 1, y: 19},player.id==id,player,socket,count);
+                    break;
+                }
+                case 3:{
+                    
+                    p=new Player({x: 39, y: 19},player.id==id,player,socket,count);
+                    break;
+                }
+                case 4:{
+                    
+                    p=new Player({x: 39, y: 1},player.id==id,player,socket,count);
+                    break;
+                }
+                default:{
+                    break;
+                }
             }
+            count++;
             this.players.push(p);
         });
     }
 
-    spawnEnemies() {
+    spawnEnemies(server_maze) {
         this.enemies = [];
         const availablePathwayStart = [];
 
@@ -342,9 +418,13 @@ class GameEngine {
                 i += 5;
             }
         }
+        let randomish=server_maze.randomish;
+        let i=10000;
 
         availablePathwayStart.sort(() => {
-            return 0.5 - Math.random();
+            let a=randomish[i];
+            i--;
+            return a;
         });
 
         for (let i = 0; i < 5; i++) {
@@ -382,13 +462,36 @@ class GameEngine {
         return tile ? tile.material : 'grass';
     }
 
-    gameOver(status) {
+    gameOver(status,winner_id=null,name=null) {
         if (status === 'win') {
-            console.log('You won!');
-        } else {
-            console.log('You died!');
+            document.getElementById("end__splash").style.height='672px';
+            if(winner_id==this.id){
+                document.getElementById("game__status").innerHTML="You won!";
+                document.getElementById("game__status").style.color="black";
+            }else{
+                document.getElementById("game__status").innerHTML="You lost!";
+                document.getElementById("game__status").style.color="red";
+            }
+            document.getElementById("winner").innerHTML=name;
+            document.getElementById("winner").style.color="#50da50";
+            this.over=true;
+        } else if(status==='lose' && winner_id==this.id){
+            
+            document.getElementById("end__splash").style.height='672px';
+            document.getElementById("game__status").innerHTML="You lost!";
+            document.getElementById("other__win").style.display='none';
+            document.getElementById("winner").innerHTML="Princess needs you..";
+            document.getElementById("winner").style.color="brown";
+            this.over=true;
+
+        }else if(status==='lose_all'){
+            document.getElementById("end__splash").style.height='672px';
+            document.getElementById("game__status").innerHTML="Weak!";
+            document.getElementById("winner").innerHTML='fiipractic';
+            document.getElementById("winner").style.color="#50da50";
+            this.over=true;
         }
-        this.over=true;
+        createjs.Sound.play('lose');
     }
 
     countPlayersAlive() {
@@ -399,6 +502,11 @@ class GameEngine {
             }
         }
         return playersAlive;
+    }
+
+    unload(){
+        this.stage.removeAllChildren();
+        this.stage.update();
     }
 }
 

@@ -82,11 +82,23 @@ html, body {
 }
 
 .player__name>input{
-    height: 24px;
+    height: 34px;
     display: none;
+    padding-bottom: 0px;
     margin: 0;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     width: 146px;
+    font-family: Spotify;
+    background-color: rgba(0,0,0,0.01);
+    border: none;
+    color: white;
+    text-align: center;   
+    font-size: 32px;
+    width: 100%;
+}
+
+.player__name>input:focus{
+    outline: none;
 }
 
 .game__gui{
@@ -95,7 +107,8 @@ html, body {
     height: 672px;
     background: url('../img/tile_grass.png');
     position: absolute;
-    transition: opacity 2s ease-in;
+    transition: height 2s ease-in-out;
+    overflow: hidden;
     display: flex;
     justify-content: space-around;
 }
@@ -112,7 +125,7 @@ html, body {
 .card_header{
     width: 100%;
     border-bottom: 1px solid black;
-    
+    font-size: 1.2rem;
 }
 
 .card_header>p{
@@ -125,15 +138,31 @@ html, body {
     height: 450px;
 }
 
-/* .card_content>div{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    /* text-align: center;  */
-} */
-
-.card_content>form>label{
+.card_content>p{
     text-align: center;
+}
+
+
+
+.card_content>div>label{
+    text-align: center;
+    margin:auto;
+    display: block;
+}
+.card_content>div>select{
+    text-align: center;
+    margin:auto;
+    display: block;
+}
+.card_content>div>div{
+    text-align: center;
+    margin:auto;
+    display: block;
+}
+#submit{
+    background: #744b35;
+    width: 250px;
+    height: 50px;
 }
 
 .card_item{
@@ -144,12 +173,109 @@ html, body {
     margin: 10px;
 }
 
+.card_content>div>button{
+    background: whitesmoke ;
+    width: 100px ;
+    height: 50px;
+    display: block;
+    margin:auto;
+    border: 0;
+    font-family: Spotify;
+    font-size: 1.15rem;
+}
+
+.card_content>button{
+    background: #744b35 ;
+    width: 150px ;
+    height: 50px;
+    display: block;
+    margin:auto;
+    border: 0;
+    font-family: Spotify;
+    font-size: 1.15rem;
+}
+
 .template{
-    display: none;
+    display: none !important;
 }
 
 #current{
     width:0;
 }
+
+.end__splash{
+    margin: auto;
+    width: 500px;
+    height: 500px;
+}
+
+#game__status{
+    font-size: 4rem;
+    text-align: center;
+}
+
+#other__win{
+    text-align: center;
+    font-size: 2rem;
+}
+
+#winner{
+    text-align: center;
+    font-size: 3rem;
+    color: #50da50;
+}
+
+#backtolobby{
+    display: block;
+    margin: auto;
+}
+
+#end__splash{
+    height: 0;
+}
+
+#playerDispCont>.card_item{
+    background: rgb(140, 142, 63);
+    margin: 0.2rem;
+}
+
+.player__name>button{
+    background: whitesmoke ;
+    width: 100px ;
+    height: 25px;
+    display: block;
+    margin:auto;
+    border: 0;
+    font-family: Spotify;
+    font-size: 1rem;
+}
+
+.player__name>p{
+    width: 100%;
+    text-align: center;
+}
+
+.end__splash>button{
+    background: #744b35 ;
+    width: 250px ;
+    height: 50px;
+    display: block;
+    margin:auto;
+    border: 0;
+    font-family: Spotify;
+    font-size: 1rem;
+}
+
+#roomPNumber{
+    width: 50px;
+    height: 30px;;
+    font-family: Spotify;  
+    text-align-last: center;
+    color: white;
+    background: #744b35;
+    border: 0;
+    font-size: 1.15rem;
+}
+
 
 

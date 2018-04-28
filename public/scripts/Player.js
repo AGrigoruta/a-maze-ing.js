@@ -4,10 +4,11 @@ import Utils from './Utils.js';
 import HUD from './HUD.js';
 export default class Player {
 
-    constructor(position, controls, id,socket) {
+    constructor(position, controls, pdata,socket,count) {
         this.hud=new HUD();
         this.socket=socket;
         this.id = 0;
+        this.name='';
         this.velocity = 2;
         this.size = {
             w: 48,
@@ -28,14 +29,15 @@ export default class Player {
             down:false,
             right:false
         }
-        if (id) {
-            this.id = id;
+        if (pdata) {
+            this.id = pdata.id;
+            this.name = pdata.name;
         }
 
         if (!controls) {
             this.controls = controls;
             socket.on('up',(source)=>{
-                if(source==id){
+                if(source==pdata.id){
                     this.socket_controls.up=true;
                     this.socket_controls.left=false;
                     this.socket_controls.down=false;
@@ -43,7 +45,7 @@ export default class Player {
                 }
             });
             socket.on('left',(source)=>{
-                if(source==id){
+                if(source==pdata.id){
                     this.socket_controls.left=true;
                     this.socket_controls.down=false;
                     this.socket_controls.right=false;
@@ -51,7 +53,7 @@ export default class Player {
                 }
             });
             socket.on('down',(source)=>{
-                if(source==id){
+                if(source==pdata.id){
                     this.socket_controls.down=true;
                     this.socket_controls.right=false;
                     this.socket_controls.up=false;
@@ -59,7 +61,7 @@ export default class Player {
                 }
             });
             socket.on('right',(source)=>{
-                if(source==id){
+                if(source==pdata.id){
                     this.socket_controls.right=true;
                     this.socket_controls.up=false;
                     this.socket_controls.left=false;
@@ -67,7 +69,7 @@ export default class Player {
                 }
             });
             socket.on('idle',(source)=>{
-                if(source==id){
+                if(source==pdata.id){
                     this.socket_controls.right=false;
                     this.socket_controls.up=false;
                     this.socket_controls.left=false;
@@ -76,7 +78,33 @@ export default class Player {
             });
         }
 
-        const img = gGameEngine.playerBoyImg;
+        let img=null;
+        switch(count){
+            case 1:{
+                img = gGameEngine.player1;
+                if(controls)
+                    document.getElementById('pname').style.color='#e2e2e2';
+                break;
+            }
+            case 2:{
+                img = gGameEngine.player2;
+                if(controls)
+                    document.getElementById('pname').style.color='#5585ff';
+                break;
+            }
+            case 3:{
+                img = gGameEngine.player3;
+                if(controls)
+                    document.getElementById('pname').style.color='#ff4343';
+                break;
+            }
+            case 4:{
+                img = gGameEngine.player4;
+                if(controls)
+                    document.getElementById('pname').style.color='#7cff83';
+                break;
+            }
+        }
 
         const spriteSheet = new createjs.SpriteSheet({
             images: [img],
@@ -194,7 +222,7 @@ export default class Player {
             if(this.position.y<=8){
                 this.bmp.y=300;
             }
-            gGameEngine.gameOver('win');
+            gGameEngine.gameOver('win',this.id,this.name);
         }
     }
 
@@ -323,9 +351,10 @@ export default class Player {
 
     die() {
         this.alive = false;
-
-        if (gGameEngine.countPlayersAlive() === 0) {
-            gGameEngine.gameOver('lose');
+        if (gGameEngine.countPlayersAlive() == 0) {
+            gGameEngine.gameOver('lose_all');
+        }else{
+            gGameEngine.gameOver('lose',this.id);
         }
 
         this.bmp.gotoAndPlay('dead');

@@ -32,6 +32,7 @@ window.changeName=()=>{
     document.getElementById('pnameInp').value=me.name;
     document.getElementById('pnameBtn').innerText='Set';
     document.getElementById('pnameBtn').onclick=setName;
+    document.getElementById('pnameInp').focus();
 }
 
 document.getElementById("submit").onclick=()=>{
@@ -150,7 +151,26 @@ socket.on('gameWillBegin',(maze)=>{
         if(count==0){
             gGameEngine.load(roomPlayers,maze,me.id,socket);
             clearInterval(timer);
-            document.getElementById("game__gui").style.opacity=0;
+            document.getElementById("game__health").style.opacity=1;
+            document.getElementById("game__wood").style.opacity=1;
+            document.getElementById("game__gui").style.height=0;
         }
     },1000)
+})
+
+document.getElementById("backtolobby").addEventListener('click',()=>{
+    document.getElementById("end__splash").style.height=0;
+    window.leaveRoom();
+    document.getElementById("game__gui").style.height='672px';
+    document.getElementById("status").innerHTML='Waiting for players to join...';
+    document.getElementById("game__health").style.opacity=0;
+    document.getElementById('health__current').style.width = `100%`;
+    document.getElementById('health__current').style.background='#42f448';
+    document.getElementById("game__wood").style.opacity=0;
+    document.getElementById('pname').style.color='white';
+    setTimeout(() => {
+        gGameEngine.unload();
+        gGameEngine.reinit();
+    }, 3000);
+    
 })
