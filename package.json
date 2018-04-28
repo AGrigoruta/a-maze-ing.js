@@ -1,5 +1,5 @@
 {
-  "name": "a-maze-ing.js",
+  "name": "a-maze-ing",
   "version": "0.0.1",
   "description": "We want You, to join us in the web castle.",
   "main": "main.js",
@@ -9,23 +9,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AGrigoruta/a-maze-ing.js"
+    "url": "git+https://github.com/jdmartins/A-maze-ing.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AGrigoruta/a-maze-ing.js/issues"
+    "url": "https://github.com/jdmartins/A-maze-ing/issues"
   },
-  "homepage": "https://github.com/AGrigoruta/a-maze-ing.js#readme",
+  "homepage": "https://github.com/jdmartins/A-maze-ing#readme",
   "dependencies": {
-    "chalk": "2.3.0",
     "express": "^4.16.2",
+    "chalk": "2.3.0",
     "socket.io": "2.1.0"
   },
   "devDependencies": {
-    "babel-eslint": "^8.2.2",
-    "eslint": "^4.19.1",
-    "eslint-plugin-import": "^2.10.0",
     "nodemon": "^1.14.12"
   }
 }
