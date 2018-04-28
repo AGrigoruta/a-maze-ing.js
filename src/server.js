@@ -7,7 +7,7 @@ const port = 8888;
 
 app.use(express.static('public'));
 
-server.listen(port, null, null, () => {
+server.listen(port, '0.0.0.0', null, () => {
     console.log(chalk.green(`Server running on http://localhost:${port}`));
 });
 
